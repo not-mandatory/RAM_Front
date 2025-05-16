@@ -14,10 +14,10 @@ export default function UnauthorizedPage() {
         error.
       </p>
       <div className="flex gap-4">
-        <Link href="/">
+        <Link href="/dashboard">
           <Button>Go to Dashboard</Button>
         </Link>
-        <Link href="/">
+        <Link href="/auth/login">
           <Button variant="outline">Log In with Different Account</Button>
         </Link>
       </div>

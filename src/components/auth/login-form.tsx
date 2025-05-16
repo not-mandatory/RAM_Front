@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -13,22 +12,25 @@ import { Label } from "@/components/ui/label"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
-import axios from "axios"
-import { AxiosError } from "axios"
+import { useAuth } from "@/context/auth-context"
 
 // Define the schema
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(4, { message: "Password must be at least 4 characters" }),
-  rememberMe: z.boolean().default(false).optional(),
+  password: z.string().min(1, { message: "Password is required" }),
+  rememberMe: z.boolean(),
 })
 
 // Derive the type from the schema
 type LoginFormValues = z.infer<typeof loginSchema>
 
-export function LoginForm() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+interface LoginFormProps {
+  callbackUrl?: string
+  useRoleBasedRedirect?: boolean
+}
+
+export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: LoginFormProps) {
+  const { login, error: authError, loading } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
   // Initialize the form with the correct types
@@ -37,75 +39,36 @@ export function LoginForm() {
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false, // Explicitly set to false, not undefined
+      rememberMe: false as boolean,
     },
   })
 
   async function onSubmit(data: LoginFormValues) {
-    setIsLoading(true)
     setError(null)
-  
+    console.log("Attempting login with:", data.email, "Callback URL:", callbackUrl)
+
     try {
-      // Define the expected response type
-      interface LoginResponse {
-        
-        user_role: string;
-      }
+      // If we're using role-based redirect, pass an empty string as callbackUrl
+      // This will make the login function use the role to determine the redirect
+      const redirectUrl = useRoleBasedRedirect ? "" : callbackUrl
+      const success = await login(data.email, data.password, redirectUrl)
+      console.log("Login success:", success)
 
-      console.log("Form data:", data) // Debugging line
-
-      const res = await axios.post<LoginResponse>(
-        "http://localhost:5000/api/login",
-        {
-          email: data.email,
-          password: data.password,
-        },
-        {
-          withCredentials: true, // Important: allows cookies (if Flask is using them)
-        }
-      )
-
-      
-  
-      // Assuming Flask returns: { access_token: string, user_role: string }
-      if (res.status === 200 && res.data.user_role) {
-        console.log("Login successful:", res.data)
-  
-        // Optional: store token locally if you don’t rely on HTTP-only cookie
-        //localStorage.setItem("token", res.data.access_token)
-  
-        // Route based on user role
-        if (res.data.user_role === "admin") {
-          router.push("/admin/project")
-        } else {
-          router.push("/user/project")
-        }
-      } else {
-        setError("Invalid server response. Please try again.")
+      if (!success) {
+        setError("Invalid email or password. Please try again.")
       }
-    } catch (err: any) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === 401) {
-          setError("Invalid email or password.")
-        } else {
-          setError("Server error. Please try again.")
-        }
-      } else {
-        setError("Unexpected error. Please try again.")
-      }
+    } catch (err) {
       console.error("Login error:", err)
-    } finally {
-      setIsLoading(false)
+      setError("An unexpected error occurred. Please try again.")
     }
   }
-  
 
   return (
     <div className="grid gap-6">
-      {error && (
+      {(error || authError) && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>{error || authError}</AlertDescription>
         </Alert>
       )}
 
@@ -167,8 +130,8 @@ export function LoginForm() {
             </Link>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? (
               <>
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
                 Signing in...
