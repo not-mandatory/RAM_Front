@@ -193,7 +193,7 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
                     className={`w-24 ${field.value === true ? "bg-green-600 hover:bg-green-700" : ""}`}
                     onClick={() => field.onChange(true)}
                   >
-                    Yes
+                    Oui
                   </Button>
                   <Button
                     type="button"
@@ -201,7 +201,7 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
                     className={`w-24 ${field.value === false ? "bg-red-600 hover:bg-red-700" : ""}`}
                     onClick={() => field.onChange(false)}
                   >
-                    No
+                    Non
                   </Button>
                 </div>
                 <FormMessage />
@@ -215,10 +215,10 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
             {isSubmitting ? (
               <>
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                Submitting...
+                Envoi en cours...
               </>
             ) : (
-              "Submit Evaluation"
+              "Soumettre l’évaluation"
             )}
           </Button>
         </div>
