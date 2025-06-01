@@ -10,9 +10,19 @@ const ADMIN_PATH_PREFIX = "/admin"
 // Flask backend URL
 const FLASK_API_URL = "http://localhost:5000"
 
+
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   console.log("Middleware running for path:", pathname)
+
+
+ console.log("🍪 MIDDLEWARE COOKIE DEBUG:")
+ console.log("Path:", pathname)
+ console.log("Cookies header:", request.headers.get("cookie"))
+ console.log("All cookies:", request.cookies.getAll())
+
+console.log("Middleware running for path:", pathname)
 
   console.log("==== MIDDLEWARE DEBUG ====")
   console.log("Current URL path:", pathname)
@@ -59,9 +69,10 @@ export async function middleware(request: NextRequest) {
       // Normalize the role for comparison (handle null/undefined and convert to lowercase)
       const role = (rawRole || "").toString().toLowerCase().trim()
       console.log("Normalized role for comparison:", role)
-
+      // Check if the role is empty after normalization
       // Check admin routes with more flexible comparison
       if (isAdminRoute) {
+        
         console.log("Checking admin access with role:", role)
         // Check if role contains "admin" instead of exact match
         if (!role.includes("admin")) {

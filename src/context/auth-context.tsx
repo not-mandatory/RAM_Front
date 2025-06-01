@@ -51,8 +51,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         if (res.ok) {
           const userData = await res.json()
+          console.log("User data from API:", userData);
           setUser({
-            id: userData.id,
+            id: userData.id,  
             name: userData.name,
             email: userData.email,
             user_role: userData.user_role,

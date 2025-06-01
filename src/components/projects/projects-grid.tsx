@@ -28,13 +28,14 @@ import {
   ImageIcon,
   Users,
   Mail,
+  PlusCircle,
 } from "lucide-react"
 import Link from "next/link"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Image from "next/image"
 
-// Update the types to match the API response
+// Types
 type User = {
   name: string
   position: string
@@ -64,21 +65,14 @@ export function ProjectsGrid() {
   const [expandedTeams, setExpandedTeams] = useState<Record<string, boolean>>({})
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
 
-
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        // Fetch projects from your API endpoint
         const data = await getProjects()
-        
-        console.log("Fetched projects:", data)
-
-        // Initialize all projects with collapsed team sections
         const initialExpandedTeams: Record<string, boolean> = {}
         data.forEach((project: Project) => {
           initialExpandedTeams[project.id] = false
         })
-
         setExpandedTeams(initialExpandedTeams)
         setProjects(data)
         setFilteredProjects(data)
@@ -88,11 +82,9 @@ export function ProjectsGrid() {
         setIsLoading(false)
       }
     }
-
     fetchProjects()
   }, [])
 
-  // Update search filter to work with the new structure
   useEffect(() => {
     if (searchQuery) {
       const filtered = projects.filter(
@@ -144,7 +136,6 @@ export function ProjectsGrid() {
     }))
   }
 
-  // Get initials from name
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -154,7 +145,6 @@ export function ProjectsGrid() {
       .substring(0, 2)
   }
 
-  // Get random pastel color based on name
   const getAvatarColor = (name: string) => {
     const colors = [
       "bg-red-100 text-red-800",
@@ -166,36 +156,21 @@ export function ProjectsGrid() {
       "bg-indigo-100 text-indigo-800",
       "bg-teal-100 text-teal-800",
     ]
-
-    // Simple hash function to get consistent color for the same name
     const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
     return colors[hash % colors.length]
   }
 
-  // Helper function to get team lead from users array
-  const getTeamLead = (users: User[]) => {
-    return users.find((user) => user.is_team_lead) || null
-  }
-
-  // Helper function to get team members (non-leads) from users array
-  const getTeamMembers = (users: User[]) => {
-    return users.filter((user) => !user.is_team_lead)
-  }
-
+  const getTeamLead = (users: User[]) => users.find((user) => user.is_team_lead) || null
+  const getTeamMembers = (users: User[]) => users.filter((user) => !user.is_team_lead)
 
   const getValidImageUrl = (imagePath: string | undefined) => {
     if (!imagePath) return null
-
-    // If it's already an absolute URL (http:// or https://)
     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
       return imagePath
     }
-
-    // If it's a relative path without a leading slash, add one
     if (!imagePath.startsWith("/")) {
       return null
     }
-
     return imagePath
   }
 
@@ -205,10 +180,11 @@ export function ProjectsGrid() {
       [id]: true,
     }))
   }
-  
 
   return (
     <div className="space-y-4">
+      
+
       <div className="flex items-center">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -224,34 +200,35 @@ export function ProjectsGrid() {
 
       {isLoading ? (
         <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.length > 0 ? (
             filteredProjects.map((project) => {
-              // Extract team lead and members
               const teamLead = getTeamLead(project.users)
               const teamMembers = getTeamMembers(project.users)
-
               return (
-                <Card key={project.id} className="overflow-hidden flex flex-col">
+                <Card
+                  key={project.id}
+                  className="overflow-hidden flex flex-col bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-200 hover:-translate-y-1"
+                >
                   {/* Project Image */}
-                  <div className="relative w-full h-48 bg-muted">
+                  <div className="relative w-full h-48 bg-gray-100">
                     {project.image_path && !imageErrors[project.id] ? (
                       <Image
-                          src={getValidImageUrl(project.image_path)}
-                          alt={project.title}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          onError={() => handleImageError(project.id)}
-                        />
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
-                    </div>
-                  )}
+                        src={getValidImageUrl(project.image_path)}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        onError={() => handleImageError(project.id)}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
+                      </div>
+                    )}
                     <div className="absolute top-2 right-2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -294,8 +271,6 @@ export function ProjectsGrid() {
                       >
                         {project.description}
                       </div>
-
-                      {/* Only show expand/collapse button if description is long enough */}
                       {project.description.length > 150 && (
                         <Button
                           variant="ghost"
@@ -317,7 +292,6 @@ export function ProjectsGrid() {
                         </Button>
                       )}
                     </div>
-
                     {/* Team Section with Collapsible */}
                     <Collapsible
                       open={expandedTeams[project.id]}
@@ -328,7 +302,7 @@ export function ProjectsGrid() {
                         <div className="flex items-center justify-between cursor-pointer hover:bg-muted/30 p-2 rounded-md transition-colors">
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium">Team</span>
+                            <span className="text-sm font-medium">Equipe</span>
                             <Badge variant="outline" className="ml-1 text-xs">
                               {project.users.length}
                             </Badge>
@@ -340,7 +314,6 @@ export function ProjectsGrid() {
                           )}
                         </div>
                       </CollapsibleTrigger>
-
                       <CollapsibleContent className="pt-3 space-y-3">
                         {/* Team Lead */}
                         {teamLead && (
@@ -366,11 +339,10 @@ export function ProjectsGrid() {
                             </div>
                           </div>
                         )}
-
                         {/* Team Members */}
                         {teamMembers.length > 0 ? (
                           <div className="space-y-2">
-                            <div className="text-xs font-medium text-muted-foreground">Team Members</div>
+                            <div className="text-xs font-medium text-muted-foreground">Membres</div>
                             <div className="space-y-2">
                               {teamMembers.map((member, index) => (
                                 <div key={index} className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/30">
@@ -398,7 +370,6 @@ export function ProjectsGrid() {
                       </CollapsibleContent>
                     </Collapsible>
                   </CardContent>
-
                   <CardFooter className="flex justify-between text-xs text-muted-foreground border-t pt-3">
                     {project.createdAt ? (
                       <span>Created: {new Date(project.createdAt).toLocaleDateString()}</span>
@@ -443,9 +414,6 @@ export function ProjectsGrid() {
   )
 }
 
-// This function is referenced but not imported in your code
-// Make sure to import it or implement it
-async function deleteProject(id: string): Promise<void> {
-  // Implementation goes here
-  console.log("Deleting project with ID:", id)
-}
+// Dummy deleteProject function for completeness
+
+

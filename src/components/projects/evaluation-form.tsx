@@ -97,9 +97,9 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
         <div className="rounded-full bg-green-100 p-3 mb-4">
           <CheckCircle2 className="h-8 w-8 text-green-600" />
         </div>
-        <h3 className="text-xl font-semibold mb-2">Evaluation Submitted!</h3>
-        <p className="text-muted-foreground mb-6">Thank you for your feedback.</p>
-        <Button onClick={() => router.push("/user/project")}>Return to Dashboard</Button>
+        <h3 className="text-xl font-semibold mb-2">Évaluation soumise !</h3>
+        <p className="text-muted-foreground mb-6">Merci pour votre retour.</p>
+        <Button onClick={() => router.push("/user/project")}>Retour au votre espace.</Button>
       </div>
     )
   }

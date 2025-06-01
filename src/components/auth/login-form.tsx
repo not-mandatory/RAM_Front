@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, Mail, Lock, Loader2 } from "lucide-react"
 import { useAuth } from "@/context/auth-context"
 
 // Define the schema
@@ -66,24 +66,31 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
   return (
     <div className="grid gap-6">
       {(error || authError) && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="border-red-200 bg-red-50">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error || authError}</AlertDescription>
+          <AlertDescription className="text-red-800">{error || authError}</AlertDescription>
         </Alert>
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="name@example.com" {...field} />
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="name@royalairmaroc.com"
+                      {...field}
+                      className="pl-10 bg-white border-gray-300 focus-visible:ring-red-500 focus-visible:border-red-500"
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-red-600" />
               </FormItem>
             )}
           />
@@ -93,11 +100,19 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      {...field}
+                      className="pl-10 bg-white border-gray-300 focus-visible:ring-red-500 focus-visible:border-red-500"
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-red-600" />
               </FormItem>
             )}
           />
@@ -114,10 +129,11 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
                     onCheckedChange={(checked) => {
                       field.onChange(checked === true ? true : false)
                     }}
+                    className="data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
                   />
                   <Label
                     htmlFor="remember-me"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-sm font-medium leading-none text-gray-700 cursor-pointer"
                   >
                     Remember me
                   </Label>
@@ -125,15 +141,20 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
               )}
             />
 
-            <Link href="#" className="text-sm font-medium text-primary hover:underline">
+            <Link href="#" className="text-sm font-medium hover:underline">
               Forgot password?
             </Link>
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-md"
+            disabled={loading}
+            size="lg"
+          >
             {loading ? (
               <>
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing in...
               </>
             ) : (
@@ -145,17 +166,17 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <span className="w-full border-t border-gray-300" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">Or</span>
+          <span className="bg-gray-50 px-2 text-gray-500">Or</span>
         </div>
       </div>
 
       <div className="text-center text-sm">
         Don't have an account?{" "}
-        <Link href="/auth/signup" className="font-medium text-primary hover:underline">
-          Sign up
+        <Link href="/auth/signup" className="font-medium text-black-600 hover:text-green-700 hover:underline">
+          Contact your administrator
         </Link>
       </div>
     </div>

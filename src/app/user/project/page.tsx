@@ -30,19 +30,29 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="container mx-auto py-10 px-4 md:px-6">
-      <div className="flex flex-col items-start gap-4 md:gap-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Your Projects</h1>
-          <p className="text-muted-foreground">Select a project to evaluate its performance and provide feedback.</p>
-        </div>
+    
+    <div className="min-h-screen bg-gray-100 py-10">
+      <div className="container mx-auto">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
+          <div className="flex flex-col items-start gap-4 mb-6">
+            <h1 className="text-3xl font-bold tracking-tight">Projets</h1>
+            <p className="text-muted-foreground">Sélectionnez un projet pour évaluer sa performance et fournir un feedback.</p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-           {projects.map((project: Project) => (
-           <ProjectCard key={project.id} project={project} />
-           ))}
-        </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
+              <span className="ml-4 text-gray-500">Chargement des projets...</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+              {projects.map((project: Project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          )}
 
+        </div>
       </div>
     </div>
   )

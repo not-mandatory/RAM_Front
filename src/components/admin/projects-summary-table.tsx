@@ -123,7 +123,7 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
                   className="flex items-center justify-center gap-1 p-0 font-semibold hover:bg-transparent w-full"
                   onClick={() => handleSort("avg_qst")}
                 >
-                  Average
+                  Moyenne
                   <ArrowUpDown className="h-3 w-3" />
                 </Button>
               </TableHead>

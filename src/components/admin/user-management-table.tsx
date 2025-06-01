@@ -101,12 +101,12 @@ export function UserManagementTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
+                <TableHead>Nom complet</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Position</TableHead>
+                <TableHead>Rôle</TableHead>
                 <TableHead>Direction</TableHead>
-                <TableHead>Created At</TableHead>
+                <TableHead>Position</TableHead>
+                <TableHead>Crée en</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -127,8 +127,8 @@ export function UserManagementTable() {
                         {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                       </Badge>
                     </TableCell>
-                    <TableCell>{user.position || "—"}</TableCell>
                     <TableCell>{user.direction || "—"}</TableCell>
+                    <TableCell>{user.position || "—"}</TableCell>
                     <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <DropdownMenu>
@@ -142,12 +142,12 @@ export function UserManagementTable() {
                           <Link href={`/admin/users/${user.id}`}>
                             <DropdownMenuItem>
                               <Edit className="mr-2 h-4 w-4" />
-                              Edit
+                              Modifier
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(user.id)}>
                             <Trash className="mr-2 h-4 w-4" />
-                            Delete
+                            Supprimer
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -157,7 +157,7 @@ export function UserManagementTable() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={5} className="h-24 text-center">
-                    No users found.
+                    Aucun utilisateur trouvé.
                   </TableCell>
                 </TableRow>
               )}

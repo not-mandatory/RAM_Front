@@ -37,42 +37,40 @@ interface ProjectStats {
 
 export default async function StatisticsPage() {
   const apiResponse = await getAllProjectEvaluations()
-
-  // Format the API response to match our expected structure
   const evaluationsData = formatEvaluations(apiResponse)
-
-  // Get project statistics for the Projects tab
-  // In a real app, this would be a separate API call
   const projectStats = await getProjectStatistics()
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Project Evaluations Statistics</h1>
-          <p className="text-muted-foreground mt-2">View and analyze all project evaluations submitted by users.</p>
+    <div className="min-h-screen bg-gray-100 py-10 px-2">
+      <div className="container mx-auto">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col gap-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-800">Statistiques des évaluations de projets.
+</h1>
+            <p className="text-muted-foreground mt-2">Consultez et analysez toutes les évaluations de projets soumises par les utilisateurs.
+</p>
+          </div>
+
+          <Tabs defaultValue="table" className="w-full">
+            <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsTrigger value="table">Vue en tableau</TabsTrigger>
+              <TabsTrigger value="summary">Sommaire</TabsTrigger>
+              <TabsTrigger value="projects">Projets</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="table" className="mt-6">
+              <ProjectStatisticsTable evaluations={evaluationsData} />
+            </TabsContent>
+
+            <TabsContent value="summary" className="mt-6">
+              <ProjectsSummaryTable projectStats={projectStats} />
+            </TabsContent>
+
+            <TabsContent value="projects" className="mt-6">
+              <ProjectsOverview projectStats={projectStats} />
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <Tabs defaultValue="table" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
-            <TabsTrigger value="table">Table View</TabsTrigger>
-            <TabsTrigger value="summary">Summary</TabsTrigger>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="table" className="mt-6">
-            <ProjectStatisticsTable evaluations={evaluationsData} />
-          </TabsContent>
-
-          {/* REPLACED SUMMARY TAB CONTENT WITH PROJECT SUMMARY TABLE */}
-          <TabsContent value="summary" className="mt-6">
-            <ProjectsSummaryTable projectStats={projectStats} />
-          </TabsContent>
-
-          <TabsContent value="projects" className="mt-6">
-            <ProjectsOverview projectStats={projectStats} />
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   )
@@ -81,85 +79,19 @@ export default async function StatisticsPage() {
 // Helper function to format the API response
 function formatEvaluations(apiResponse: EvaluationResponse[]): FormattedEvaluation[] {
   return apiResponse.map((item, index) => {
-    // Map the answers array to our specific fields
-    // Assuming: answers[0] = quality, answers[1] = timeliness,
-    // answers[2] = communication, answers[3] = usability, answers[4] = wouldRecommend (1 = true, 0 = false)
     return {
-      id: `eval-${index}`, // Generate a unique ID
+      id: `eval-${index}`,
       projectName: item.project_title,
       userName: item.username,
       quality: item.answers[0],
       timeliness: item.answers[1],
       communication: item.answers[2],
       usability: item.answers[3],
-      wouldRecommend: item.answers[4] === 1, // Convert 1/0 to boolean
-      date: new Date().toISOString(), // Use current date since it's not provided
+      wouldRecommend: item.answers[4] === 1,
+      date: new Date().toISOString(),
     }
   })
 }
-
-// Mock function to get project statistics - in a real app, this would be an API call
-// async function getProjectStatistics(): Promise<ProjectStats[]> {
-//   // This is the data provided by the user
-//   return [
-//     {
-//       avg_qst: 3.42,
-//       mean_qsts: [4.0, 4.33, 2.67, 2.67],
-//       no_count: 0,
-//       project_title: "entertain our passengers",
-//       yes_count: 3,
-//     },
-//     {
-//       avg_qst: 4.08,
-//       mean_qsts: [4.33, 5.0, 3.33, 3.67],
-//       no_count: 4,
-//       project_title: "lottery win",
-//       yes_count: 2,
-//     },
-//     {
-//       avg_qst: 3.88,
-//       mean_qsts: [4.0, 3.5, 4.5, 3.5],
-//       no_count: 1,
-//       project_title: "Iot sensors",
-//       yes_count: 1,
-//     },
-//     {
-//       avg_qst: 2.5,
-//       mean_qsts: [1.0, 2.0, 3.0, 4.0],
-//       no_count: 1,
-//       project_title: "another",
-//       yes_count: 0,
-//     },
-//     {
-//       avg_qst: 0.0,
-//       mean_qsts: [0, 0, 0, 0],
-//       no_count: 0,
-//       project_title: "tryy",
-//       yes_count: 0,
-//     },
-//     {
-//       avg_qst: 0.0,
-//       mean_qsts: [0, 0, 0, 0],
-//       no_count: 0,
-//       project_title: "zigzag",
-//       yes_count: 0,
-//     },
-//     {
-//       avg_qst: 0.0,
-//       mean_qsts: [0, 0, 0, 0],
-//       no_count: 0,
-//       project_title: "tramway",
-//       yes_count: 0,
-//     },
-//     {
-//       avg_qst: 3.75,
-//       mean_qsts: [3.0, 4.0, 5.0, 3.0],
-//       no_count: 0,
-//       project_title: "now navbar",
-//       yes_count: 1,
-//     },
-//   ]
-// }
 
 function StatisticCard({
   title,

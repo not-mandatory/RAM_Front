@@ -71,7 +71,7 @@ function ProjectCard({ project }: { project: ProjectStats }) {
           <div>
             <CardTitle>{project.project_title}</CardTitle>
             <CardDescription className="mt-1">
-              {totalEvaluations} evaluation{totalEvaluations !== 1 ? "s" : ""}
+              {totalEvaluations} évaluation{totalEvaluations > 1 ? "s" : ""}
             </CardDescription>
           </div>
           <Badge
@@ -83,7 +83,7 @@ function ProjectCard({ project }: { project: ProjectStats }) {
                   : "bg-red-100 text-red-800"
             }
           >
-            {recommendationRate}% Recommended
+            {recommendationRate}% Recommandé
           </Badge>
         </div>
       </CardHeader>
@@ -91,7 +91,7 @@ function ProjectCard({ project }: { project: ProjectStats }) {
         <div className="space-y-6">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Overall Rating</span>
+              <span className="text-muted-foreground">Note globale</span>
               <span className="font-medium">{project.avg_qst.toFixed(1)}/5</span>
             </div>
             <Progress value={project.avg_qst * 20} className="h-2" />

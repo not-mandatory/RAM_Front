@@ -116,7 +116,8 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
-            <DropdownMenuItem onClick={() => setSearchTerm("")}>All Evaluations</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSearchTerm("")}>Toutes les évaluations
+</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSearchTerm("user")}>Filter by "user"</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSearchTerm("anass")}>Filter by "anass"</DropdownMenuItem>
           </DropdownMenuContent>
@@ -138,7 +139,7 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
                   className="flex items-center justify-center gap-1 cursor-pointer"
                   onClick={() => handleSort("quality")}
                 >
-                  Quality
+                  Désirabilité
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
@@ -147,7 +148,7 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
                   className="flex items-center justify-center gap-1 cursor-pointer"
                   onClick={() => handleSort("timeliness")}
                 >
-                  Timeliness
+                  Viabilité
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
@@ -156,7 +157,7 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
                   className="flex items-center justify-center gap-1 cursor-pointer"
                   onClick={() => handleSort("communication")}
                 >
-                  Communication
+                  Faisabilité
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
@@ -165,7 +166,7 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
                   className="flex items-center justify-center gap-1 cursor-pointer"
                   onClick={() => handleSort("usability")}
                 >
-                  Usability
+                  Alignement Corporate
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
@@ -174,11 +175,11 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
                   className="flex items-center justify-center gap-1 cursor-pointer"
                   onClick={() => handleSort("wouldRecommend")}
                 >
-                  Recommend
+                  Recommander
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
-              <TableHead className="text-center">Mean</TableHead>
+              <TableHead className="text-center">Moyenne</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -222,14 +223,14 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
             ) : (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  No evaluations found.
+                  Aucune évaluation trouvée.
                 </TableCell>
               </TableRow>
             )}
             {/* Average row */}
             {filteredEvaluations.length > 0 && (
               <TableRow className="bg-muted/50 font-medium">
-                <TableCell>Column Average</TableCell>
+                <TableCell>Moyenne de la colonne</TableCell>
                 <TableCell className="text-center">{columnAverages.quality.toFixed(1)}</TableCell>
                 <TableCell className="text-center">{columnAverages.timeliness.toFixed(1)}</TableCell>
                 <TableCell className="text-center">{columnAverages.communication.toFixed(1)}</TableCell>
