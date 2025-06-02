@@ -43,11 +43,11 @@ export function ProjectsOverview({ projectStats }: ProjectsOverviewProps) {
         </div>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
         {filteredProjects.length > 0 ? (
           filteredProjects.map((project) => <ProjectCard key={project.project_title} project={project} />)
         ) : (
-          <div className="text-center py-10 text-muted-foreground">No projects found matching your search.</div>
+          <div className="text-center py-10 text-muted-foreground col-span-full">No projects found matching your search.</div>
         )}
       </div>
     </div>
