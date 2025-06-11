@@ -12,11 +12,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 // Define the schema for form validation
 const evaluationSchema = z.object({
-  qst_1: z.number().min(1, { message: "Veuillez évaluer la désirabilité" }),
-  qst_2: z.number().min(1, { message: "Veuillez évaluer la viabilité" }),
-  qst_3: z.number().min(1, { message: "Veuillez évaluer la faisabilité" }),
-  qst_4: z.number().min(1, { message: "Veuillez évaluer l'alignement corporate" }),
-  qst_bool: z.boolean({
+  q1: z.number().min(1, { message: "Veuillez évaluer la désirabilité" }),
+  q2: z.number().min(1, { message: "Veuillez évaluer la viabilité" }),
+  q3: z.number().min(1, { message: "Veuillez évaluer la faisabilité" }),
+  q4: z.number().min(1, { message: "Veuillez évaluer l'alignement corporate" }),
+  q5: z.boolean({
     required_error: "Veuillez indiquer si le projet doit continuer",
   }),
 })
@@ -36,10 +36,11 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
   const form = useForm<EvaluationFormValues>({
     resolver: zodResolver(evaluationSchema),
     defaultValues: {
-      qst_1: 0,
-      qst_2: 0,
-      qst_3: 0,
-      qst_4: 0,
+      q1: 0,
+      q2: 0,
+      q3: 0,
+      q4: 0,
+
       // No default value for qst_bool to ensure user makes a selection
     },
   })
@@ -111,7 +112,7 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
           {/* Question 1 */}
           <FormField
             control={form.control}
-            name="qst_1"
+            name="q1"
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel className="text-base font-medium">
@@ -128,7 +129,7 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
           {/* Question 2 */}
           <FormField
             control={form.control}
-            name="qst_2"
+            name="q2"
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel className="text-base font-medium">
@@ -145,7 +146,7 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
           {/* Question 3 */}
           <FormField
             control={form.control}
-            name="qst_3"
+            name="q3"
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel className="text-base font-medium">
@@ -162,7 +163,7 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
           {/* Question 4 */}
           <FormField
             control={form.control}
-            name="qst_4"
+            name="q4"
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel className="text-base font-medium">
@@ -180,7 +181,7 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
           {/* Question 5 (Boolean) - Required with no default selection */}
           <FormField
             control={form.control}
-            name="qst_bool"
+            name="q5"
             render={({ field }) => (
               <FormItem className="space-y-3 pt-2">
                 <FormLabel className="text-base font-medium">

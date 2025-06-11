@@ -18,7 +18,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Plane,
-  LayoutDashboard,
   BarChart2,
   Users,
   Lightbulb,
@@ -27,11 +26,11 @@ import {
   LogOut,
   Menu,
   Globe,
-  Bell,
   ChevronDown,
   Shield,
   Languages,
 } from "lucide-react"
+import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
 
 interface AdminNavbarProps {
   user?: {
@@ -44,7 +43,6 @@ interface AdminNavbarProps {
 
 export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
   const pathname = usePathname()
-  const [notifications] = useState(5)
 
   const { user, logout } = useAuth()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -60,16 +58,15 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
     }
   }
 
-
   // Get user initials for avatar
   const getInitials = (name?: string) => {
-  if (!name) return "";
-  return name
-    .split(" ")
-    .map((part) => part[1] ? part[0] + part[1] : part[0]) // Take first two letters if available
-    .join("")
-    .toUpperCase();
-};
+    if (!name) return ""
+    return name
+      .split(" ")
+      .map((part) => (part[1] ? part[0] + part[1] : part[0])) // Take first two letters if available
+      .join("")
+      .toUpperCase()
+  }
 
   const navItems = [
     // {
@@ -216,15 +213,9 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
             <Settings className="h-5 w-5" />
           </Button>
 
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            {notifications > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-medium text-white">
-                {notifications}
-              </span>
-            )}
-          </Button>
+          {/* Real-time Notifications */}
+          <NotificationDropdown />
+
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -259,24 +250,19 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="text-red-600 cursor-pointer"
-                >
-                  {isLoggingOut ? (
-                    <>
-                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                      <span>Logging out...</span>
-                    </>
-                  ) : (
-                    <>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Déconnexion</span>
-                    </>
-                  )}
-                </DropdownMenuItem>
-                
+              <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut} className="text-red-600 cursor-pointer">
+                {isLoggingOut ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                    <span>Logging out...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Déconnexion</span>
+                  </>
+                )}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -284,4 +270,3 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
     </header>
   )
 }
-

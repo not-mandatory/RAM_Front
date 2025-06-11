@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/context/auth-context"
+import { NotificationProvider } from "@/components/notifications/notification-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="white" enableSystem>
           <AuthProvider>
-            <main className="min-h-screen bg-background">{children}</main>
+            <NotificationProvider>
+              <main className="min-h-screen bg-background">{children}</main>
+            </NotificationProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -7,16 +7,17 @@ export async function POST(req: NextRequest, context: { params: { projectId: num
   console.log("Received ratings:", ratings)     
 
 
-  const answers = [
-    ratings.qst_1,
-    ratings.qst_2,
-    ratings.qst_3,
-    ratings.qst_4,
-    ratings.qst_bool ? 1 : 0
-  ]
+  // const answers = [
+  //   ratings.qst_1,
+  //   ratings.qst_2,
+  //   ratings.qst_3,
+  //   ratings.qst_4,
+  //   ratings.qst_bool ? 1 : 0
+  // ]
+  ratings.q5 = ratings.q5 ? 1 : 0;
 
 
-  console.log("Received ans:", JSON.stringify({ answers }))
+  // console.log("Received ans:", JSON.stringify({ answers }))
   console.log("Received projectId:", projectId)
   const cookieHeader = req.headers.get("cookie") || ""
   
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest, context: { params: { projectId: num
         // Forward the token to Flask
         "Cookie": cookieHeader,
       },
-      body: JSON.stringify({ answers }), // Flask expects 'answers'
+      body: JSON.stringify(ratings), // Flask expects 'answers'
     })
 
     const data = await flaskRes.json()

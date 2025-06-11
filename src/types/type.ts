@@ -10,3 +10,14 @@ export interface Project {
     image_path: string;
     category: string; 
   }
+
+
+  export interface Idea {
+  id: string
+  title: string
+  description: string
+  category: string,
+  status: string,
+  submitted_by: string
+  created_at: string
+}

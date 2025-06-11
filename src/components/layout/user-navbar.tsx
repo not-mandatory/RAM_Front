@@ -67,11 +67,11 @@ export function UserNavbar({ user: propUser, onLogout }: UserNavbarProps) {
       href: "/user/project",
       icon: <Plane className="h-4 w-4" />,
     },
-    // {
-    //   name: "Soumettre une Idée",
-    //   href: "/ideas/submit",
-    //   icon: <Lightbulb className="h-4 w-4" />,
-    // },
+    {
+      name: "Soumettre une Idée",
+      href: "/user/idea/submit",
+      icon: <Lightbulb className="h-4 w-4" />,
+    },
   ]
 
   return (

@@ -106,7 +106,7 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
                 </Button>
               </TableHead>
               {questionNames.map((name, index) => (
-                <TableHead key={index} className="text-center">
+                <TableHead key={`summary-header-${index}-${name}`} className="text-center">
                   <Button
                     variant="ghost"
                     className="flex items-center justify-center gap-1 p-0 font-semibold hover:bg-transparent w-full"
@@ -151,11 +151,14 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
           </TableHeader>
           <TableBody>
             {sortedProjects.length > 0 ? (
-              sortedProjects.map((project) => (
-                <TableRow key={project.project_title}>
+              sortedProjects.map((project, projectIndex) => (
+                <TableRow key={`summary-project-${projectIndex}-${project.project_title}`}>
                   <TableCell className="font-medium">{project.project_title}</TableCell>
                   {project.mean_qsts.map((value, index) => (
-                    <TableCell key={index} className="text-center">
+                    <TableCell
+                      key={`${project.project_title}-rating-${index}-${questionNames[index]}`}
+                      className="text-center"
+                    >
                       <RatingBadge rating={value} />
                     </TableCell>
                   ))}

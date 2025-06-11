@@ -1,7 +1,10 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { ProjectStatisticsTable } from "@/components/admin/project-statistics-table"
 import { ProjectsOverview } from "@/components/admin/projects-overview"
 import { ProjectsSummaryTable } from "@/components/admin/projects-summary-table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getAllProjectEvaluations } from "@/lib/projects"
 import { getProjectStatistics } from "@/lib/projects"
@@ -35,40 +38,93 @@ interface ProjectStats {
   yes_count: number
 }
 
-export default async function StatisticsPage() {
-  const apiResponse = await getAllProjectEvaluations()
-  const evaluationsData = formatEvaluations(apiResponse)
-  const projectStats = await getProjectStatistics()
+export default function StatisticsPage() {
+  const searchParams = useSearchParams()
+  const [evaluationsData, setEvaluationsData] = useState<FormattedEvaluation[]>([])
+  const [projectStats, setProjectStats] = useState<ProjectStats[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [activeTab, setActiveTab] = useState("table")
+
+  // Initialize search term from URL parameters
+  useEffect(() => {
+    const searchFromUrl = searchParams.get("search")
+    if (searchFromUrl) {
+      setSearchTerm(searchFromUrl)
+    }
+  }, [searchParams])
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true)
+      try {
+        const [apiResponse, statsResponse] = await Promise.all([getAllProjectEvaluations(), getProjectStatistics()])
+
+        const formattedEvaluations = formatEvaluations(apiResponse)
+        setEvaluationsData(formattedEvaluations)
+        setProjectStats(statsResponse)
+      } catch (error) {
+        console.error("Error fetching statistics data:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-10 px-2">
+        <div className="container mx-auto">
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-2">
       <div className="container mx-auto">
         <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col gap-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-800">Statistiques des évaluations de projets.
-</h1>
-            <p className="text-muted-foreground mt-2">Consultez et analysez toutes les évaluations de projets soumises par les utilisateurs.
-</p>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-800">
+              Statistiques des évaluations de projets.
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Consultez et analysez toutes les évaluations de projets soumises par les utilisateurs.
+            </p>
           </div>
 
-          <Tabs defaultValue="table" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full max-w-md grid-cols-3">
               <TabsTrigger value="table">Vue en tableau</TabsTrigger>
               <TabsTrigger value="summary">Sommaire</TabsTrigger>
               <TabsTrigger value="projects">Projets</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="table" className="mt-6">
-              <ProjectStatisticsTable evaluations={evaluationsData} />
-            </TabsContent>
+            {activeTab === "table" && (
+              <TabsContent value="table" className="mt-6">
+                <ProjectStatisticsTable evaluations={evaluationsData} initialSearchTerm={searchTerm} />
+              </TabsContent>
+            )}
 
-            <TabsContent value="summary" className="mt-6">
-              <ProjectsSummaryTable projectStats={projectStats} />
-            </TabsContent>
+            {activeTab === "summary" && (
+              <TabsContent value="summary" className="mt-6">
+                <ProjectsSummaryTable projectStats={projectStats} />
+              </TabsContent>
+            )}
 
-            <TabsContent value="projects" className="mt-6">
-              <ProjectsOverview projectStats={projectStats} />
-            </TabsContent>
+            {activeTab === "projects" && (
+              <TabsContent value="projects" className="mt-6">
+                <ProjectsOverview projectStats={projectStats} />
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </div>
@@ -91,66 +147,4 @@ function formatEvaluations(apiResponse: EvaluationResponse[]): FormattedEvaluati
       date: new Date().toISOString(),
     }
   })
-}
-
-function StatisticCard({
-  title,
-  value,
-  description,
-  trend,
-}: {
-  title: string
-  value: number
-  description: string
-  trend: number
-}) {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold">{value.toFixed(1)}</div>
-        <p className="text-xs text-muted-foreground mt-1">{description}</p>
-        <div className={`flex items-center mt-2 text-xs ${trend >= 0 ? "text-green-600" : "text-red-600"}`}>
-          {trend >= 0 ? (
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-1">
-              <path
-                fillRule="evenodd"
-                d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0110 17z"
-                clipRule="evenodd"
-              />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-1">
-              <path
-                fillRule="evenodd"
-                d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z"
-                clipRule="evenodd"
-              />
-            </svg>
-          )}
-          {Math.abs(trend * 100).toFixed(1)}% from last month
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function calculateAverageForMetric(evaluations: FormattedEvaluation[], metric: keyof FormattedEvaluation): number {
-  if (evaluations.length === 0) return 0
-
-  const sum = evaluations.reduce((acc, evaluation) => {
-    const value = evaluation[metric]
-    return acc + (typeof value === "number" ? value : 0)
-  }, 0)
-
-  return sum / evaluations.length
-}
-
-function calculateRecommendationRate(evaluations: FormattedEvaluation[]): number {
-  if (evaluations.length === 0) return 0
-
-  const recommendCount = evaluations.filter((e) => e.wouldRecommend).length
-  return Math.round((recommendCount / evaluations.length) * 100)
 }

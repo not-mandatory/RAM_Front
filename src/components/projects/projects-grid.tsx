@@ -75,6 +75,7 @@ export function ProjectsGrid() {
         })
         setExpandedTeams(initialExpandedTeams)
         setProjects(data)
+        console.log("Fetched projects:", data)
         setFilteredProjects(data)
         setIsLoading(false)
       } catch (error) {

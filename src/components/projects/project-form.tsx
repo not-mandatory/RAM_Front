@@ -31,8 +31,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getUsers } from "@/lib/users" // Import the getUsers function
-
+import { getProjectById } from "@/lib/projects"
 // Define the User type based on what getUsers returns
+import { getIdeaById } from "@/lib/ideas"
 type User = {
   id: number
   username: string
@@ -55,7 +56,7 @@ const projectSchema = z.object({
     message: "Description must be at least 10 characters.",
   }),
   category: z.enum(
-    ["Sustainable Development", "Operational Performance", "Customer Experience", "Revenue Generation"],
+    ["Génération de revenus", "Expérience client", "Performance opérationnelle", "Développement durable"],
     {
       required_error: "Please select a category.",
     },
@@ -121,16 +122,72 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
       description: project?.description || "",
       category:
         (project?.category as
-          | "Sustainable Development"
-          | "Operational Performance"
-          | "Customer Experience"
-          | "Revenue Generation") || undefined,
+          | "Génération de revenus"
+          | "Expérience client"
+          | "Performance opérationnelle"
+          | "Développement durable") || undefined,
       // Add default values for team information
       teamLeadId: project?.teamLeadId ? parseInt(project.teamLeadId, 10) || undefined : undefined,
       // Initialize team members array
       teamMembers: project?.teamMembers?.map((member) => ({ userId: parseInt(member.userId, 10) })) || [],
     },
   })
+
+
+  useEffect(() => {
+    const loadIdeaData = async () => {
+      if (ideaId) {
+        setIsLoadingIdea(true)
+        try {
+          console.log("Loading idea data for ID:", ideaId)
+          const idea = await getIdeaById(ideaId)
+          console.log("Loaded idea data:", idea)
+
+          if (idea) {
+            // Set form values with a slight delay to ensure form is ready
+            form.setValue("title", idea.title)
+            form.setValue("description", idea.description)
+
+            // Explicitly set the category value as a valid enum value
+            const categoryValue = idea.category
+            form.setValue("category", categoryValue)
+          } else {
+            console.error("Idea not found with ID:", ideaId)
+          }
+        } catch (error) {
+          console.error("Failed to load idea data:", error)
+        } finally {
+          setIsLoadingIdea(false)
+        }
+      } else if (projectId) {
+        try {
+          const project = await getProjectById(projectId)
+          console.log("Loaded project data:", project)
+
+          if (project) {
+            form.setValue("title", project.title)
+            form.setValue("description", project.description)
+            form.setValue("category", project.category)
+
+            // Set image preview if project has an image
+            if (project.image) {
+              setImagePreview(project.image)
+            }
+          } else {
+            console.error("Project not found with ID:", projectId)
+          }
+        } catch (error) {
+          console.error("Failed to load project data:", error)
+        }
+      }
+    }
+
+    loadIdeaData()
+  }, [ideaId, form, projectId])
+
+
+
+
 
   const isValidImageUrl = (url: string): boolean => {
     if (!url) return false
@@ -410,10 +467,10 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Revenue Generation">Revenue Generation</SelectItem>
-                        <SelectItem value="Customer Experience">Customer Experience</SelectItem>
-                        <SelectItem value="Operational Performance">Operational Performance</SelectItem>
-                        <SelectItem value="Sustainable Development">Sustainable Development</SelectItem>
+                        <SelectItem value="Génération de revenus">Revenue Generation</SelectItem>
+                        <SelectItem value="Expérience client">Customer Experience</SelectItem>
+                        <SelectItem value="Performance opérationnelle">Operational Performance</SelectItem>
+                        <SelectItem value="Développement durable">Sustainable Development</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

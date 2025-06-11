@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Search, SlidersHorizontal, ArrowUpDown, Check, X } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface Evaluation {
   id: string
@@ -22,19 +23,77 @@ interface Evaluation {
 
 interface ProjectStatisticsTableProps {
   evaluations: Evaluation[]
+  initialSearchTerm?: string
 }
 
-export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTableProps) {
-  const [searchTerm, setSearchTerm] = useState("")
+export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: ProjectStatisticsTableProps) {
+  const router = useRouter()
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm)
   const [sortField, setSortField] = useState<keyof Evaluation>("date")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
 
-  // Filter evaluations based on search term
-  const filteredEvaluations = evaluations.filter(
-    (evaluation) =>
-      evaluation.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      evaluation.userName.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  // Set initial search term from props
+  useEffect(() => {
+    if (initialSearchTerm) {
+      setSearchTerm(initialSearchTerm)
+
+      // Find and scroll to the matching row without highlighting
+      if (evaluations.length > 0) {
+        const searchTermLower = initialSearchTerm.toLowerCase()
+        const matchingEvaluation = evaluations.find((evaluation) => {
+          const projectNameLower = evaluation.projectName.toLowerCase()
+          const userNameLower = evaluation.userName.toLowerCase()
+          const combinedString = `${projectNameLower} ${userNameLower}`
+
+          // Check if the search term matches both project and user
+          const searchKeywords = searchTermLower.split(/\s+/).filter((keyword) => keyword.length > 0)
+          return searchKeywords.every((keyword) => combinedString.includes(keyword))
+        })
+
+        if (matchingEvaluation) {
+          setTimeout(() => {
+            const element = document.getElementById(`evaluation-row-${matchingEvaluation.id}`)
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth", block: "center" })
+            }
+          }, 500)
+        }
+      }
+    }
+  }, [initialSearchTerm, evaluations])
+
+  // --- Enhanced filter for AND/OR search logic ---
+  const filteredEvaluations = evaluations.filter((evaluation) => {
+    if (!searchTerm.trim()) return true
+
+    const searchTermLower = searchTerm.toLowerCase().trim()
+    const projectNameLower = evaluation.projectName.toLowerCase()
+    const userNameLower = evaluation.userName.toLowerCase()
+
+    // Split search term by spaces to handle multiple keywords
+    const searchKeywords = searchTermLower.split(/\s+/).filter((keyword) => keyword.length > 0)
+
+    if (searchKeywords.length === 1) {
+      // OR logic: match if either project or user contains the keyword
+      const keyword = searchKeywords[0]
+      return projectNameLower.includes(keyword) || userNameLower.includes(keyword)
+    }
+
+    if (searchKeywords.length === 2) {
+      // AND logic: require both keywords to be present, one in project, one in user (any order)
+      const [first, second] = searchKeywords
+      const firstInProject = projectNameLower.includes(first)
+      const secondInUser = userNameLower.includes(second)
+      const firstInUser = userNameLower.includes(first)
+      const secondInProject = projectNameLower.includes(second)
+      return (firstInProject && secondInUser) || (firstInUser && secondInProject)
+    }
+
+    // If more than two keywords, require all keywords to be present in either field (flexible AND)
+    return searchKeywords.every(
+      (keyword) => projectNameLower.includes(keyword) || userNameLower.includes(keyword)
+    )
+  })
 
   // Sort evaluations
   const sortedEvaluations = [...filteredEvaluations].sort((a, b) => {
@@ -43,7 +102,6 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
         ? new Date(a.date).getTime() - new Date(b.date).getTime()
         : new Date(b.date).getTime() - new Date(a.date).getTime()
     }
-
     const aValue = a[sortField]
     const bValue = b[sortField]
 
@@ -95,6 +153,15 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
     return (evaluation.quality + evaluation.timeliness + evaluation.communication + evaluation.usability) / 4
   }
 
+  // Clear search and update URL
+  const clearSearch = () => {
+    setSearchTerm("")
+    // Remove search parameter from URL
+    const newUrl = new URL(window.location.href)
+    newUrl.searchParams.delete("search")
+    router.replace(newUrl.pathname)
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
@@ -102,12 +169,23 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search by project or user..."
-            className="pl-8 w-full"
+            placeholder="Search by project and/or user..."
+            className="pl-8 pr-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          {searchTerm && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute right-1 top-1 h-6 w-6 p-0 hover:bg-muted"
+              onClick={clearSearch}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
         </div>
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2">
@@ -116,14 +194,15 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
-            <DropdownMenuItem onClick={() => setSearchTerm("")}>Toutes les évaluations
-</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSearchTerm("user")}>Filter by "user"</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSearchTerm("anass")}>Filter by "anass"</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSearchTerm("")}>Toutes les évaluations</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSearchTerm("Project A")}>Filter by "Project A"</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSearchTerm("John")}>Filter by "John"</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSearchTerm("Project A John")}>
+              Filter by "Project A John"
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -185,7 +264,7 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
           <TableBody>
             {sortedEvaluations.length > 0 ? (
               sortedEvaluations.map((evaluation) => (
-                <TableRow key={evaluation.id}>
+                <TableRow key={evaluation.id} id={`evaluation-row-${evaluation.id}`} className="hover:bg-muted/50">
                   <TableCell>
                     <div>
                       <div className="font-medium">{evaluation.projectName}</div>
@@ -223,7 +302,7 @@ export function ProjectStatisticsTable({ evaluations }: ProjectStatisticsTablePr
             ) : (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  Aucune évaluation trouvée.
+                  {searchTerm ? `No evaluations found matching "${searchTerm}"` : "Aucune évaluation trouvée."}
                 </TableCell>
               </TableRow>
             )}

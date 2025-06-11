@@ -45,9 +45,13 @@ export function ProjectsOverview({ projectStats }: ProjectsOverviewProps) {
 
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
         {filteredProjects.length > 0 ? (
-          filteredProjects.map((project) => <ProjectCard key={project.project_title} project={project} />)
+          filteredProjects.map((project, projectIndex) => (
+            <ProjectCard key={`project-overview-${projectIndex}-${project.project_title}`} project={project} />
+          ))
         ) : (
-          <div className="text-center py-10 text-muted-foreground col-span-full">No projects found matching your search.</div>
+          <div className="text-center py-10 text-muted-foreground col-span-full">
+            No projects found matching your search.
+          </div>
         )}
       </div>
     </div>
@@ -99,7 +103,7 @@ function ProjectCard({ project }: { project: ProjectStats }) {
 
           <div className="grid grid-cols-2 gap-4">
             {project.mean_qsts.map((value, index) => (
-              <div key={index} className="space-y-1">
+              <div key={`${project.project_title}-criteria-${index}-${questionNames[index]}`} className="space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{questionNames[index]}</span>
                   <span>{value.toFixed(1)}</span>

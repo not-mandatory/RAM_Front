@@ -13,6 +13,8 @@ export async function getProjects() {
     throw new Error("Failed to fetch projects from the API");
   }
 
+   // Log the response for debugging
+
   return res.json();
 }
 
@@ -66,16 +68,18 @@ export async function getAllProjectEvaluations() {
     headers: {
       "Content-Type": "application/json",
     },
-    cache: "no-store", // optional but useful for always fetching fresh data
+    cache: "no-store",
   });
 
-  console.log("Response from API:", res); // Log the response for debugging
   if (!res.ok) {
     throw new Error("Failed to fetch projects from the API");
   }
 
-  return res.json();
+  const data = await res.json();
+  console.log("Response from API gettttpevaluations:", data); // ← Now logs the actual data
+  return data;
 }
+
 
 export async function getProjectStatistics() {
   const res = await fetch("http://localhost:3000/api/project/projectAnalysis", {

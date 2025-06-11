@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     // Proxy request to Flask API (adjust URL if needed)
-    const res = await fetch("http://localhost:5000/admin/projects/summary", {
+    const res = await fetch("http://localhost:5000/api/admin/ideas", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -18,7 +18,6 @@ export async function GET() {
     }
 
     const data = await res.json();
-    console.log("Response from API summary route:", data);
     
     // Assuming the response is in JSON format
     return NextResponse.json(data);
