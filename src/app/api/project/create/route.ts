@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
     // Extract and add basic fields
     const title = formData.get("title")
     const description = formData.get("description")
+    const category = formData.get("category")
 
     if (!title) {
       return new Response(JSON.stringify({ error: "Title is required" }), {
@@ -27,6 +28,9 @@ export async function POST(req: NextRequest) {
 
     if (description) {
       flaskFormData.append("description", description as string)
+    }
+    if (category) {
+      flaskFormData.append("category", category as string)
     }
 
     // Handle team lead ID - rename from teamLeadId to team_leader_id

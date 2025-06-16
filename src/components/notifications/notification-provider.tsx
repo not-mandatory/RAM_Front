@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import { useAuth } from "@/context/auth-context"
 import { io } from "socket.io-client"
 import type { Socket } from "socket.io-client/dist/socket"
+import { da } from "date-fns/locale"
 
 interface Notification {
   id: number
@@ -63,9 +64,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const markAsRead = async (id: number) => {
     if (!isAdmin) return
 
-    console.log("Marking notification as read:", id)
-
     try {
+      console.log("Marking notification as read:", id)
+
       const response = await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
         method: "PUT",
         credentials: "include",
@@ -111,9 +112,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     let timeout: NodeJS.Timeout | null = null
 
-    // Only connect if user is admin and socket is not already connected
     if (isAdmin && !socketRef.current) {
-      // Wait a short time to ensure JWT cookie is set after login
       timeout = setTimeout(() => {
         const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000", {
           withCredentials: true,
@@ -125,14 +124,22 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         })
 
         socket.on("new_notification", (data: any) => {
+          // Robust related_id logic: support idea_id, project_id, evaluation_id, related_id
+          let related_id =
+            data.related_id?.toString() ||
+            data.idea_id?.toString() ||
+            data.project_id?.toString() ||
+            data.evaluation_id?.toString() ||
+            undefined
+
           const newNotification: Notification = {
-            id: Date.now(),
+            id: data.id,
             title: data.title,
             message: data.message,
             type: data.type,
             is_read: false,
             created_at: data.timestamp,
-            related_id: data.idea_id?.toString(),
+            related_id,
           }
           setNotifications((prev) => [newNotification, ...prev])
           setUnreadCount((prev) => prev + 1)
@@ -146,11 +153,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           }
         })
 
-        // Fetch notifications on socket connect
         fetchNotifications()
-      }, 200) // 200ms delay
+      }, 200)
 
-      // Clean up on unmount or user change
       return () => {
         if (timeout) clearTimeout(timeout)
         if (socketRef.current) {
@@ -160,18 +165,15 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       }
     }
 
-    // If user logs out or is not admin, disconnect socket and clear notifications
     if (!isAdmin && socketRef.current) {
       socketRef.current.disconnect()
       socketRef.current = null
       setNotifications([])
       setUnreadCount(0)
     }
-
     // eslint-disable-next-line
   }, [isAdmin])
 
-  // Request browser notification permission on mount
   useEffect(() => {
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission()

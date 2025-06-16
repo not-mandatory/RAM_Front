@@ -22,12 +22,15 @@ export async function getUsers() {
       headers: {
         "Content-Type": "application/json",
       },
+       // Include cookies for session management
       body: JSON.stringify(projectData),
     });
   
     if (!res.ok) {
       throw new Error("Failed to create project");
     }
+
+    console.log("User created successfully");
   
     return res.json();
   }

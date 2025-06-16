@@ -46,22 +46,23 @@ export function UserNavbar({ user: propUser, onLogout }: UserNavbarProps) {
     }
   }
 
-  // Get user initials for avatar
   const getInitials = (name?: string) => {
   if (!name) return "";
-  return name
-    .split(" ")
-    .map((part) => part[1] ? part[0] + part[1] : part[0]) // Take first two letters if available
+  const parts = name.trim().split(/\s+/); // Split on one or more spaces
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase(); // One word → take first two letters
+  }
+
+  return parts
+    .map((part) => part[0]) // Multiple words → first letter of each
     .join("")
     .toUpperCase();
 };
 
+
   const navItems = [
-    // {
-    //   name: "Évaluer",
-    //   href: "/dashboard",
-    //   icon: <ClipboardCheck className="h-4 w-4" />,
-    // },
+    
     {
       name: "Projets",
       href: "/user/project",
@@ -72,6 +73,11 @@ export function UserNavbar({ user: propUser, onLogout }: UserNavbarProps) {
       href: "/user/idea/submit",
       icon: <Lightbulb className="h-4 w-4" />,
     },
+    {
+      name: "Historique",
+      href: "/user/evaluation",
+      icon: <ClipboardCheck className="h-4 w-4" />,
+    },
   ]
 
   return (
@@ -81,23 +87,23 @@ export function UserNavbar({ user: propUser, onLogout }: UserNavbarProps) {
           {/* Logo */}
           <Link href="/user/project" className="hidden items-center space-x-2 md:flex">
             <div className="relative">
-              <div className="h-9 w-9 overflow-hidden  flex items-center justify-center">
-                <Image
-                    src="/images/ram-logo.png"
-                    alt="Royal Air Maroc Logo"
-                    width={50}
-                    height={36}
-                    className="object-contain"
-                    priority
-                  />              </div>
-              <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-600" />
+              <div className="h-16 w-40 relative">
+                                            <Image
+                                              src="/images/ram-logo.png"
+                                              alt="Royal Air Maroc Logo"
+                                              fill
+                                              className="object-contain object-left"
+                                              sizes="160px"
+                                            />
+                              </div>
+              {/* <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-600" /> */}
             </div>
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <span className="font-bold text-lg leading-tight bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
                 Royal Air Maroc
               </span>
               <span className="text-[10px] leading-none text-muted-foreground">RAM</span>
-            </div>
+            </div> */}
           </Link>
 
           {/* Mobile menu */}
@@ -120,7 +126,7 @@ export function UserNavbar({ user: propUser, onLogout }: UserNavbarProps) {
                   <span className="font-bold text-lg leading-tight bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
                     Royal Air Maroc
                   </span>
-                  <span className="text-[10px] leading-none text-muted-foreground">RAM</span>
+                  <span className="text-[10px] leading-none text-muted-foreground">RA</span>
                 </div>
               </div>
               <nav className="flex flex-col space-y-3">
@@ -186,14 +192,14 @@ export function UserNavbar({ user: propUser, onLogout }: UserNavbarProps) {
           </DropdownMenu>
 
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
+          {/* <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             {notifications > 0 && (
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-medium text-white">
                 {notifications}
               </span>
             )}
-          </Button>
+          </Button> */}
 
           {/* User menu */}
           <DropdownMenu>
@@ -216,13 +222,13 @@ export function UserNavbar({ user: propUser, onLogout }: UserNavbarProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
+              {/* <DropdownMenuItem asChild>
                 <Link href="/profile" className="flex cursor-pointer items-center">
                   <User className="mr-2 h-4 w-4" />
                   <span>Mon Profil</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator /> */}
               <DropdownMenuItem className="flex cursor-pointer items-center text-red-600"
                 onClick={handleLogout}
                   disabled={isLoggingOut}

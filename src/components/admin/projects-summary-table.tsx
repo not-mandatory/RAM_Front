@@ -83,7 +83,7 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search projects..."
+            placeholder="Rechercher des projets..."
             className="pl-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -101,7 +101,7 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
                   className="flex items-center gap-1 p-0 font-semibold hover:bg-transparent"
                   onClick={() => handleSort("project_title")}
                 >
-                  Project Name
+                  Nom du projet
                   <ArrowUpDown className="h-3 w-3" />
                 </Button>
               </TableHead>

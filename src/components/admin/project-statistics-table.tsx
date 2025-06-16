@@ -169,7 +169,7 @@ export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: 
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search by project and/or user..."
+            placeholder="Rechercher par projet ou évaluateur..."
             className="pl-8 pr-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -186,7 +186,7 @@ export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: 
           )}
         </div>
         
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4" />
@@ -201,7 +201,7 @@ export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: 
               Filter by "Project A John"
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -209,7 +209,7 @@ export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: 
             <TableRow>
               <TableHead className="w-[250px]">
                 <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("projectName")}>
-                  Project / User
+                  Projet / Évaluateur
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>

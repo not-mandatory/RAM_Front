@@ -1,3 +1,4 @@
+// components/admin/projects-grid.tsx (or wherever your ProjectsGrid is)
 "use client"
 import { getProjects } from "@/lib/projects"
 import { useState, useEffect } from "react"
@@ -35,7 +36,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Image from "next/image"
 
-// Types
+// --- ADD THIS IMPORT ---
+
+
+// Types (keep them as they are)
 type User = {
   name: string
   position: string
@@ -113,7 +117,10 @@ export function ProjectsGrid() {
   const handleDeleteConfirm = async () => {
     if (projectToDelete) {
       try {
-        await deleteProject(projectToDelete)
+        // --- ENSURE deleteProject IS IMPORTED AND AVAILABLE ---
+        await deleteProject(projectToDelete) // This function needs to be defined
+        // --- END ENSURE ---
+
         setProjects(projects.filter((project) => project.id !== projectToDelete))
         setIsDeleteDialogOpen(false)
         setProjectToDelete(null)
@@ -169,8 +176,12 @@ export function ProjectsGrid() {
     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
       return imagePath
     }
+    // Assume relative paths are also valid if they start with a slash
     if (!imagePath.startsWith("/")) {
-      return null
+        // If it's a relative path without a leading slash (e.g., 'uploads/image.jpg'),
+        // you might need to prepend a base URL or a slash depending on your setup.
+        // For now, let's assume valid relative paths start with '/' for Next.js Image component
+        return null;
     }
     return imagePath
   }
@@ -184,14 +195,12 @@ export function ProjectsGrid() {
 
   return (
     <div className="space-y-4">
-      
-
       <div className="flex items-center">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search projects or team members..."
+            placeholder="Rechercher projets ou membres…"
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -216,9 +225,9 @@ export function ProjectsGrid() {
                 >
                   {/* Project Image */}
                   <div className="relative w-full h-48 bg-gray-100">
-                    {project.image_path && !imageErrors[project.id] ? (
+                    {project.image_path && !imageErrors[project.id] && getValidImageUrl(project.image_path) ? (
                       <Image
-                        src={getValidImageUrl(project.image_path)}
+                        src={getValidImageUrl(project.image_path)!} // Use ! because we've checked for null
                         alt={project.title}
                         fill
                         className="object-cover"
@@ -238,15 +247,18 @@ export function ProjectsGrid() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <Link href={`/admin/projects/${project.id}`}>
+                          {/* --- UPDATED LINK HERE --- */}
+                          <Link href={`/admin/project/edit/${project.id}`}>
                             <DropdownMenuItem>
                               <Edit className="mr-2 h-4 w-4" />
-                              Edit
+                              Modifier
                             </DropdownMenuItem>
                           </Link>
+                          {/* --- END UPDATED LINK --- */}
+
                           <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(project.id)}>
                             <Trash className="mr-2 h-4 w-4" />
-                            Delete
+                            Supprimer
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -282,12 +294,13 @@ export function ProjectsGrid() {
                           {expandedDescriptions[project.id] ? (
                             <>
                               <ChevronUp className="mr-1 h-3 w-3" />
-                              Show less
+                              Afficher moins
+
                             </>
                           ) : (
                             <>
                               <ChevronDown className="mr-1 h-3 w-3" />
-                              Read more
+                              Lire plus
                             </>
                           )}
                         </Button>
@@ -303,7 +316,7 @@ export function ProjectsGrid() {
                         <div className="flex items-center justify-between cursor-pointer hover:bg-muted/30 p-2 rounded-md transition-colors">
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium">Equipe</span>
+                            <span className="text-sm font-medium">Équipe</span>
                             <Badge variant="outline" className="ml-1 text-xs">
                               {project.users.length}
                             </Badge>
@@ -366,7 +379,7 @@ export function ProjectsGrid() {
                             </div>
                           </div>
                         ) : (
-                          <div className="text-sm text-muted-foreground text-center py-2">No team members added</div>
+                          <div className="text-sm text-muted-foreground text-center py-2">Aucun membre de l’équipe ajouté</div>
                         )}
                       </CollapsibleContent>
                     </Collapsible>
@@ -377,19 +390,13 @@ export function ProjectsGrid() {
                     ) : (
                       <span></span>
                     )}
-                    <Link href={`/admin/projects/${project.id}`}>
-                      <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
-                        <Edit className="mr-1 h-3 w-3" />
-                        Edit
-                      </Button>
-                    </Link>
                   </CardFooter>
                 </Card>
               )
             })
           ) : (
             <div className="col-span-full h-24 flex items-center justify-center text-muted-foreground">
-              No projects found.
+              Aucun projet trouvé.
             </div>
           )}
         </div>
@@ -404,9 +411,9 @@ export function ProjectsGrid() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-600 hover:bg-red-700">
-              Delete
+              Supprimer
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -414,7 +421,4 @@ export function ProjectsGrid() {
     </div>
   )
 }
-
-// Dummy deleteProject function for completeness
-
 

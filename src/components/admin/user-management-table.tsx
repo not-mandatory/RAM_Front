@@ -84,7 +84,7 @@ export function UserManagementTable() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search users..."
+            placeholder="Rechercher des évaluateurs..."
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -139,10 +139,10 @@ export function UserManagementTable() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <Link href={`/admin/users/${user.id}`}>
+                          <Link href={`/admin/user/${user.id}/edit`}>
                             <DropdownMenuItem>
                               <Edit className="mr-2 h-4 w-4" />
-                              Modifier
+                                Modifier
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(user.id)}>

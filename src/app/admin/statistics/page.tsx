@@ -105,7 +105,7 @@ export default function StatisticsPage() {
             <TabsList className="grid w-full max-w-md grid-cols-3">
               <TabsTrigger value="table">Vue en tableau</TabsTrigger>
               <TabsTrigger value="summary">Sommaire</TabsTrigger>
-              <TabsTrigger value="projects">Projets</TabsTrigger>
+              <TabsTrigger value="projects">Cartes</TabsTrigger>
             </TabsList>
 
             {activeTab === "table" && (

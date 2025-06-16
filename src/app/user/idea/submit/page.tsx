@@ -187,15 +187,17 @@ export default function SubmitIdeaPage() {
   }
 
   return (
+   <div className="min-h-screen bg-gray-100 py-10">
     <div className="container max-w-2xl mx-auto py-10 px-4">
-      <div className="mb-6">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
+      {/* <div className="mb-6">
         <Link href="/user/project">
           <Button variant="ghost" className="pl-0 flex items-center gap-1 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
             Retour à la page d'accueil
           </Button>
         </Link>
-      </div>
+      </div> */}
 
       {/* Indicateur de progression */}
       <div className="mb-6">
@@ -366,6 +368,8 @@ export default function SubmitIdeaPage() {
           </Form>
         </CardContent>
       </Card>
+    </div>
+    </div>
     </div>
   )
 }

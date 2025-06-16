@@ -137,7 +137,7 @@ export function ExcelImportDialog() {
 
   const downloadTemplate = () => {
     const template = [
-      ["Username", "Email", "Password", "Position", "Direction"],
+      ["Nom complet", "Email", "Password", "Position", "Direction"],
       ["John cena", "john.doe@company.com", "password123", "Manager", "IT Department"],
       ["anasskjkj", "janah@company.com", "password456", "Developer", "Engineering"],
     ]
@@ -185,29 +185,28 @@ export function ExcelImportDialog() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="h-5 w-5" />
-            Import Users from Excel
+            Importer des évaluateurs depuis Excel
           </DialogTitle>
           <DialogDescription>
-            Upload an Excel file to import multiple users at once. Make sure your file follows the required format.
-          </DialogDescription>
+Téléversez un fichier Excel pour importer plusieurs évaluateurs en une seule fois. Assurez-vous que votre fichier respecte le format requis.          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 overflow-y-auto flex-1 pr-2">
           {/* Template Download */}
           <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
             <div>
-              <h4 className="font-medium text-blue-900">Need a template?</h4>
-              <p className="text-sm text-blue-700">Download our Excel template to get started</p>
+              <h4 className="font-medium text-blue-900">Besoin d’un modèle ?</h4>
+              <p className="text-sm text-blue-700">Télécharger modèle Excel</p>
             </div>
             <Button variant="outline" size="sm" onClick={downloadTemplate}>
               <Download className="h-4 w-4 mr-2" />
-              Download Template
+              Télécharger modèle
             </Button>
           </div>
 
           {/* File Upload */}
           <div className="space-y-2">
-            <Label htmlFor="excel-file">Select Excel File</Label>
+            <Label htmlFor="excel-file">Sélectionner un fichier Excel</Label>
             <div className="flex items-center gap-2">
               <Input
                 id="excel-file"
@@ -226,7 +225,7 @@ export function ExcelImportDialog() {
             {isUploading && (
               <div className="text-sm text-muted-foreground flex items-center gap-2">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                <span>Processing file...</span>
+                <span>Traitement du fichier…</span>
               </div>
             )}
           </div>
@@ -236,15 +235,15 @@ export function ExcelImportDialog() {
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl font-bold text-gray-900">{importData.length}</div>
-                <div className="text-sm text-gray-600">Total Users</div>
+                <div className="text-sm text-gray-600">Nombre total d’évaluateurs</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <div className="text-2xl font-bold text-green-900">{validUsers.length}</div>
-                <div className="text-sm text-green-600">Valid Users</div>
+                <div className="text-sm text-green-600">Évaluateurs valides</div>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg">
                 <div className="text-2xl font-bold text-red-900">{invalidUsers.length}</div>
-                <div className="text-sm text-red-600">Invalid Users</div>
+                <div className="text-sm text-red-600">Évaluateurs invalides</div>
               </div>
             </div>
           )}
@@ -252,13 +251,13 @@ export function ExcelImportDialog() {
           {/* Data Preview */}
           {importData.length > 0 && (
             <div className="space-y-4">
-              <h4 className="font-medium">Preview Import Data</h4>
+              <h4 className="font-medium">Aperçu des données importées</h4>
               <div className="border rounded-lg overflow-auto max-h-60">
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead className="min-w-[80px]">Status</TableHead>
-                      <TableHead className="min-w-[120px]">Username</TableHead>
+                      <TableHead className="min-w-[120px]">Nom complet</TableHead>
                       <TableHead className="min-w-[180px]">Email</TableHead>
                       <TableHead className="min-w-[100px]">Position</TableHead>
                       <TableHead className="min-w-[120px]">Direction</TableHead>
@@ -272,12 +271,12 @@ export function ExcelImportDialog() {
                           {user.status === "valid" ? (
                             <Badge className="bg-green-100 text-green-800 whitespace-nowrap">
                               <CheckCircle className="h-3 w-3 mr-1" />
-                              Valid
+                              Valide
                             </Badge>
                           ) : (
                             <Badge className="bg-red-100 text-red-800 whitespace-nowrap">
                               <AlertCircle className="h-3 w-3 mr-1" />
-                              Invalid
+                              Invalide
                             </Badge>
                           )}
                         </TableCell>
@@ -314,8 +313,10 @@ export function ExcelImportDialog() {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Warning</AlertTitle>
               <AlertDescription>
-                {invalidUsers.length} users have validation errors and will not be imported. Please fix the errors in
-                your Excel file and try again.
+                {invalidUsers.length}
+
+Les évaluateurs contiennent des erreurs de validation et ne seront pas importés. Veuillez corriger les erreurs dans votre fichier Excel et réessayer.
+
               </AlertDescription>
             </Alert>
           )}
@@ -323,7 +324,7 @@ export function ExcelImportDialog() {
 
         <DialogFooter className="border-t pt-4 mt-4 bg-white">
           <Button variant="outline" onClick={() => setIsOpen(false)}>
-            Cancel
+            Annuler
           </Button>
           <Button
             onClick={handleImport}
@@ -333,12 +334,13 @@ export function ExcelImportDialog() {
             {isImporting ? (
               <>
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                Importing...
+                Importation en cours...
               </>
             ) : (
               <>
                 <Upload className="mr-2 h-4 w-4" />
-                Import {validUsers.length} Users
+                  Importer {validUsers.length} évaluateur{validUsers.length > 1 ? "s" : ""}
+
               </>
             )}
           </Button>

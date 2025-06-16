@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useFieldArray } from "react-hook-form"
 import * as z from "zod"
+import { getIdeaDetails } from "@/lib/ideas"
 import {
   ImageIcon,
   X,
@@ -31,9 +32,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getUsers } from "@/lib/users" // Import the getUsers function
-import { getProjectById } from "@/lib/projects"
+
 // Define the User type based on what getUsers returns
-import { getIdeaById } from "@/lib/ideas"
 type User = {
   id: number
   username: string
@@ -56,7 +56,7 @@ const projectSchema = z.object({
     message: "Description must be at least 10 characters.",
   }),
   category: z.enum(
-    ["Génération de revenus", "Expérience client", "Performance opérationnelle", "Développement durable"],
+    ["Développement durable", "Performance opérationnelle", "Expérience client", "Génération de revenus"],
     {
       required_error: "Please select a category.",
     },
@@ -96,6 +96,8 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
   const ideaId = searchParams.get("from_idea")
   const projectId = searchParams.get("projectId")
 
+  const [idea, setIdea] = useState(null);
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(project?.image || null)
   const [isLoadingIdea, setIsLoadingIdea] = useState(!!ideaId)
@@ -112,7 +114,10 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
   const [teamLeadSearchQuery, setTeamLeadSearchQuery] = useState("")
   const [teamMemberSearchQuery, setTeamMemberSearchQuery] = useState("")
   const [teamMemberSearchOpen, setTeamMemberSearchOpen] = useState(false)
+  const [removeImage, setRemoveImage] = useState(false);
   const [users, setUsers] = useState<User[]>([])
+
+  console.log("ideaId from search params:", ideaId)
 
   // Create form with default values
   const form = useForm<ProjectFormValues>({
@@ -122,72 +127,16 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
       description: project?.description || "",
       category:
         (project?.category as
-          | "Génération de revenus"
-          | "Expérience client"
+          | "Développement durable"
           | "Performance opérationnelle"
-          | "Développement durable") || undefined,
+          | "Expérience client"
+          | "Génération de revenus") || undefined,
       // Add default values for team information
       teamLeadId: project?.teamLeadId ? parseInt(project.teamLeadId, 10) || undefined : undefined,
       // Initialize team members array
       teamMembers: project?.teamMembers?.map((member) => ({ userId: parseInt(member.userId, 10) })) || [],
     },
   })
-
-
-  useEffect(() => {
-    const loadIdeaData = async () => {
-      if (ideaId) {
-        setIsLoadingIdea(true)
-        try {
-          console.log("Loading idea data for ID:", ideaId)
-          const idea = await getIdeaById(ideaId)
-          console.log("Loaded idea data:", idea)
-
-          if (idea) {
-            // Set form values with a slight delay to ensure form is ready
-            form.setValue("title", idea.title)
-            form.setValue("description", idea.description)
-
-            // Explicitly set the category value as a valid enum value
-            const categoryValue = idea.category
-            form.setValue("category", categoryValue)
-          } else {
-            console.error("Idea not found with ID:", ideaId)
-          }
-        } catch (error) {
-          console.error("Failed to load idea data:", error)
-        } finally {
-          setIsLoadingIdea(false)
-        }
-      } else if (projectId) {
-        try {
-          const project = await getProjectById(projectId)
-          console.log("Loaded project data:", project)
-
-          if (project) {
-            form.setValue("title", project.title)
-            form.setValue("description", project.description)
-            form.setValue("category", project.category)
-
-            // Set image preview if project has an image
-            if (project.image) {
-              setImagePreview(project.image)
-            }
-          } else {
-            console.error("Project not found with ID:", projectId)
-          }
-        } catch (error) {
-          console.error("Failed to load project data:", error)
-        }
-      }
-    }
-
-    loadIdeaData()
-  }, [ideaId, form, projectId])
-
-
-
-
 
   const isValidImageUrl = (url: string): boolean => {
     if (!url) return false
@@ -213,6 +162,39 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
 
     fetchUsers()
   }, [])
+
+  
+
+  // Fetch idea details if coming from idea approval
+  useEffect(() => {
+    if (ideaId) {
+      setIsLoadingIdea(true);
+      getIdeaDetails(ideaId)
+        .then((ideaData) => {
+          setIdea(ideaData);
+          // When idea data arrives, reset the form with those values
+          form.reset({
+            title: ideaData.title || "",
+            description: ideaData.description || "",
+            category: ideaData.category || undefined,
+            teamLeadId: undefined,
+            teamMembers: [],
+    });
+        })
+        .finally(() => setIsLoadingIdea(false));
+    }
+  }, [ideaId]);
+
+
+
+
+
+
+
+
+
+
+
 
   // Set up field array for team members
   const { fields, append, remove } = useFieldArray({
@@ -258,6 +240,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
   const handleRemoveImage = () => {
     setImagePreview(null)
     setSelectedFile(null)
+    setRemoveImage(true)
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
@@ -325,6 +308,11 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
       formData.append("description", values.description)
       formData.append("category", values.category)
 
+      if (removeImage) {
+        // If the user chose to remove the image, add a flag
+        formData.append("removeImage", "true")
+      }
+
       // Add team lead ID
       formData.append("teamLeadId", values.teamLeadId.toString())
 
@@ -361,7 +349,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
       //console.log("Selected file:", selectedFile)
 
       // Send the form data to the server
-      const endpoint = project?.id ? `/api/project/${project.id}` : "/api/project/create"
+      const endpoint = project?.id ? `http://localhost:5000/api/project/update/${project.id}` : "/api/project/create"
 
       const response = await fetch(endpoint, {
         method: project?.id ? "PUT" : "POST",
@@ -419,9 +407,9 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl flex items-center gap-2">
-                <span>Project Details</span>
+                <span>Détails du projet</span>
                 <Badge variant="outline" className="ml-2">
-                  Required
+                  Requis
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -431,9 +419,9 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Project Name</FormLabel>
+                    <FormLabel>Nom du projet</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter project name" {...field} />
+                      <Input placeholder="Entrez le nom du projet" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -447,7 +435,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter project description" className="min-h-[120px]" {...field} />
+                      <Textarea placeholder="Entrez la description du projet" className="min-h-[120px]" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -459,18 +447,18 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>Catégorie</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
+                          <SelectValue placeholder="Sélectionnez une catégorie" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Génération de revenus">Revenue Generation</SelectItem>
-                        <SelectItem value="Expérience client">Customer Experience</SelectItem>
-                        <SelectItem value="Performance opérationnelle">Operational Performance</SelectItem>
-                        <SelectItem value="Développement durable">Sustainable Development</SelectItem>
+                        <SelectItem value="Génération de revenus">Génération de revenus</SelectItem>
+                        <SelectItem value="Expérience client">Éxpérience client</SelectItem>
+                        <SelectItem value="Performance opérationnelle">Performance opérationnelle</SelectItem>
+                        <SelectItem value="Développement durable">Développement durable</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -493,9 +481,9 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                 >
                   <CardTitle className="text-xl flex items-center gap-2">
                     <Users className="h-5 w-5" />
-                    <span>Team Information</span>
+                    <span>Informations sur l’équipe</span>
                     <Badge variant="outline" className="ml-2">
-                      Required
+                      Requis
                     </Badge>
                   </CardTitle>
                   {teamSectionOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
@@ -507,7 +495,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                   {isLoadingUsers ? (
                     <div className="flex flex-col items-center justify-center py-8 text-center">
                       <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                      <p className="text-muted-foreground">Loading users...</p>
+                      <p className="text-muted-foreground">Chargement des utilisateurs...</p>
                     </div>
                   ) : usersError ? (
                     <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -551,9 +539,9 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                         >
                           <div className="flex items-center gap-2">
                             <UserCog className="h-5 w-5 text-primary" />
-                            <h3 className="text-lg font-medium">Team Lead</h3>
+                            <h3 className="text-lg font-medium">Chef d’équipe</h3>
                             <Badge variant="outline" className="ml-2">
-                              Required
+                              Requis
                             </Badge>
                             {selectedTeamLead && (
                               <Badge variant="secondary" className="ml-2">
@@ -582,7 +570,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                                         setTeamLeadSearchOpen(!teamLeadSearchOpen)
                                       }}
                                     >
-                                      {selectedTeamLead ? "Change Team Lead" : "Find Team Lead"}
+                                      {selectedTeamLead ? "Changer le chef d’équipe" : "Trouver un chef d’équipe"}
                                       {teamLeadSearchOpen ? (
                                         <ChevronUp className="h-4 w-4 ml-2" />
                                       ) : (
@@ -595,11 +583,12 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                                       <div className="p-3 bg-muted/30 rounded-md border mt-4">
                                         <div className="flex items-center gap-2 mb-2">
                                           <Search className="h-4 w-4 text-muted-foreground" />
-                                          <h4 className="text-sm font-medium">Find Team Lead</h4>
+                                          <h4 className="text-sm font-medium">Trouver le chef d’équipe</h4>
                                         </div>
                                         <div className="relative">
                                           <Input
-                                            placeholder="Search by name, position, or direction..."
+                                            placeholder="Rechercher par nom, poste ou direction…
+"
                                             value={teamLeadSearchQuery}
                                             onChange={(e) => setTeamLeadSearchQuery(e.target.value)}
                                             className="pr-10"
@@ -679,7 +668,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                                     <div className="space-y-2 mt-4">
                                       <h4 className="text-sm font-medium flex items-center gap-2">
                                         <UserCog className="h-4 w-4" />
-                                        Selected Team Lead
+                                        Chef d’équipe sélectionné
                                       </h4>
                                       <div className="flex items-center justify-between p-3 bg-background rounded-md border">
                                         <div className="flex items-center gap-3">
@@ -698,7 +687,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                                               <span>{selectedTeamLead.direction}</span>
                                             </div>
                                           </div>
-                                          <Badge className="ml-auto">Team Lead</Badge>
+                                          <Badge className="ml-auto">Chef d’équipe</Badge>
                                         </div>
                                         <Button
                                           type="button"
@@ -718,9 +707,9 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                                   ) : (
                                     <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground mt-4">
                                       <UserCog className="h-12 w-12 mb-2 opacity-20" />
-                                      <p>No team lead selected</p>
+                                      <p>Aucun chef d’équipe sélectionné</p>
                                       <p className="text-sm">
-                                        Use the "Find Team Lead" button above to select a team lead
+                                        Utilisez le bouton « Trouver le chef d’équipe » ci-dessus pour sélectionner un chef d’équipe.
                                       </p>
                                     </div>
                                   )}
@@ -744,9 +733,9 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                         >
                           <div className="flex items-center gap-2">
                             <UserPlus className="h-5 w-5 text-primary" />
-                            <h3 className="text-lg font-medium">Team Members</h3>
+                            <h3 className="text-lg font-medium">Membres de l’équipe</h3>
                             <Badge variant="outline" className="ml-2">
-                              Optional
+                              Optionnel
                             </Badge>
                             {fields.length > 0 && (
                               <Badge variant="secondary" className="ml-2">
@@ -770,7 +759,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                                   setTeamMemberSearchOpen(!teamMemberSearchOpen)
                                 }}
                               >
-                                Find Team Members
+                                Trouver des membres de l’équipe
                                 {teamMemberSearchOpen ? (
                                   <ChevronUp className="h-4 w-4 ml-2" />
                                 ) : (
@@ -783,11 +772,11 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                                 <div className="p-3 bg-muted/30 rounded-md border mt-4">
                                   <div className="flex items-center gap-2 mb-2">
                                     <Search className="h-4 w-4 text-muted-foreground" />
-                                    <h4 className="text-sm font-medium">Find Team Members</h4>
+                                    <h4 className="text-sm font-medium">Trouver des membres de l’équipe</h4>
                                   </div>
                                   <div className="relative">
                                     <Input
-                                      placeholder="Search by name, position, or direction..."
+                                      placeholder="Rechercher par nom, position ou direction…"
                                       value={teamMemberSearchQuery}
                                       onChange={(e) => setTeamMemberSearchQuery(e.target.value)}
                                       className="pr-10"
@@ -863,7 +852,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                               <div className="space-y-2 mt-4">
                                 <h4 className="text-sm font-medium flex items-center gap-2">
                                   <UserRound className="h-4 w-4" />
-                                  Selected Team Members ({fields.length})
+                                  Membres de l’équipe sélectionnés ({fields.length})
                                 </h4>
                                 <div className="space-y-2">
                                   {fields.map((field, index) => {
@@ -912,8 +901,8 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                             ) : (
                               <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
                                 <Users className="h-12 w-12 mb-2 opacity-20" />
-                                <p>No team members selected</p>
-                                <p className="text-sm">Use the "Find Team Members" button above to add team members</p>
+                                <p>Aucun membre de l’équipe sélectionné</p>
+                                <p className="text-sm">Utilisez le bouton « Trouver des membres de l’équipe » ci-dessus pour ajouter des membres à l’équipe.</p>
                               </div>
                             )}
                           </div>
@@ -931,9 +920,9 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
             <CardHeader>
               <CardTitle className="text-xl flex items-center gap-2">
                 <ImageIcon className="h-5 w-5" />
-                <span>Project Image</span>
+                <span>Image du projet</span>
                 <Badge variant="outline" className="ml-2">
-                  Optional
+                  Optionnel
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -973,7 +962,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                           />
                           <div className="hidden preview-image-fallback flex-col items-center justify-center h-full w-full">
                             <ImageIcon className="h-10 w-10 text-muted-foreground/40 mb-2" />
-                            <p className="text-sm text-red-500 text-center px-4">Unable to load image from this URL</p>
+                            <p className="text-sm text-red-500 text-center px-4">Impossible de charger l’image depuis cette URL.</p>
                           </div>
                         </>
                       )}
@@ -991,7 +980,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                 ) : (
                   <div className="flex flex-col items-center justify-center w-full h-48 rounded-md border-2 border-dashed border-muted-foreground/25 bg-muted/50">
                     <ImageIcon className="h-10 w-10 text-muted-foreground/50 mb-2" />
-                    <p className="text-sm text-muted-foreground mb-2">Upload a project image</p>
+                    <p className="text-sm text-muted-foreground mb-2">Télécharger une image de projet</p>
                     <Button
                       type="button"
                       variant="secondary"
@@ -999,7 +988,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                       className="flex items-center gap-2"
                     >
                       <Upload className="h-4 w-4" />
-                      Select Image
+                      Sélectionner une image
                     </Button>
                   </div>
                 )}
@@ -1018,7 +1007,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                 {!selectedFile && (
                   <div className="flex flex-col space-y-2">
                     <p className="text-sm text-muted-foreground">
-                      Or enter a direct image URL (ending with .jpg, .png, etc.):
+                      Ou saisissez une URL d’image directe (se terminant par .jpg, .png, etc.) :
                     </p>
                     <div className="flex gap-2">
                       <Input
@@ -1042,12 +1031,13 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                           setTimeout(() => setImagePreview(currentUrl), 10)
                         }}
                       >
-                        Test URL
+                        Tester URL
                       </Button>
                     </div>
                     {imagePreview && !isValidImageUrl(imagePreview) && (
                       <p className="text-xs text-red-500">
-                        This URL may not be a direct image link. Please use a URL that ends with .jpg, .png, .gif, etc.
+                        Cette URL ne semble pas être un lien direct vers une image. Veuillez utiliser une URL se terminant par .jpg, .png, .gif, etc.
+
                       </p>
                     )}
                   </div>
@@ -1057,19 +1047,19 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
           </Card>
 
           <div className="flex gap-4 justify-end">
-            <Button type="button" variant="outline" onClick={() => router.push("/admin/projects")}>
-              Cancel
+            <Button type="button" variant="outline" onClick={() => router.push("/admin/project")}>
+              Annuler
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                  {project ? "Updating..." : "Creating..."}
+                  {project ? "Mise à jour en cours..." : "Création en cours..."}
                 </>
               ) : project ? (
-                "Update Project"
+                "Mettre à jour le projet"
               ) : (
-                "Create Project"
+                "Créer le projet"
               )}
             </Button>
           </div>

@@ -36,7 +36,7 @@ export default function DashboardPage() {
         <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
           <div className="flex flex-col items-start gap-4 mb-6">
             <h1 className="text-3xl font-bold tracking-tight">Projets</h1>
-            <p className="text-muted-foreground">Sélectionnez un projet pour évaluer sa performance et fournir un feedback.</p>
+            <p className="text-muted-foreground">Sélectionnez un projet pour l'évaluer et fournir un feedback.</p>
           </div>
 
           {isLoading ? (

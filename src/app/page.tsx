@@ -23,12 +23,12 @@ export default function Home() {
                   sizes="160px"
                 />
               </div>
-              <div className="hidden sm:block -ml-8">
+              {/* <div className="hidden sm:block -ml-8">
                 <span className="font-bold text-lg md:text-xl bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
                   ProjectEval
                 </span>
                 <p className="text-xs text-muted-foreground">Système d'Évaluation</p>
-              </div>
+              </div> */}
             </div>
             <div className="flex gap-4">
               <Link href="/auth/login">
@@ -49,7 +49,7 @@ export default function Home() {
               <div className="max-w-4xl mx-auto">
                 <Badge className="mb-6 bg-red-100 text-red-800 hover:bg-red-100 border-red-200">
                   <Star className="w-3 h-3 mr-1" />
-                  Système d'Évaluation de Projets RAM
+                  Plateforme d'Évaluation des projets d'innovation
                 </Badge>
 
                 <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
@@ -61,8 +61,7 @@ export default function Home() {
                 </h1>
 
                 <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
-                  Plateforme dédiée à l'évaluation et au suivi des projets stratégiques de Royal Air Maroc. Ensemble,
-                  nous façonnons l'avenir de l'aviation marocaine avec excellence et innovation.
+                  Plateforme dédiée à l'évaluation et au suivi des projets d’innovation du programme We Innov'8 Make Impact de Royal Air Maroc.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">

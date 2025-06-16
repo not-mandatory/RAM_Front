@@ -92,7 +92,7 @@ console.log("Middleware running for path:", pathname)
 
         // Also check if the role doesn't contain "user" and isn't admin
         // This handles cases where the role is neither admin nor user
-        if (!role.includes("user") && !role.includes("admin")) {
+        if (!role.includes("évaluateur") && !role.includes("admin")) {
           console.log("Non-user, non-admin role attempting to access user route:", role)
           return NextResponse.redirect(new URL("/unauthorized", request.url))
         }

@@ -90,7 +90,7 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
       icon: <BarChart2 className="h-4 w-4" />,
     },
     {
-      name: "Utilisateurs",
+      name: "Évaluateur",
       href: "/admin/user",
       icon: <Users className="h-4 w-4" />,
     },
@@ -103,24 +103,23 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
           {/* Logo */}
           <Link href="/admin" className="hidden items-center space-x-2 md:flex">
             <div className="relative">
-              <div className="h-9 w-9 overflow-hidden  flex items-center justify-center">
-                <Image
-                  src="/images/ram-logo.png"
-                  alt="Royal Air Maroc Logo"
-                  width={50}
-                  height={36}
-                  className="object-contain"
-                  priority
-                />
-              </div>
-              <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-600" />
+              <div className="h-16 w-40 relative">
+                              <Image
+                                src="/images/ram-logo.png"
+                                alt="Royal Air Maroc Logo"
+                                fill
+                                className="object-contain object-left"
+                                sizes="160px"
+                              />
+                </div>
+              {/* <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-600" /> */}
             </div>
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <span className="font-bold text-lg leading-tight bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
                 RAM Admin
               </span>
               <span className="text-[10px] leading-none text-muted-foreground">Royal Air Maroc</span>
-            </div>
+            </div> */}
           </Link>
 
           {/* Mobile menu */}
@@ -209,9 +208,9 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
           </DropdownMenu>
 
           {/* Settings */}
-          <Button variant="ghost" size="icon" className="hidden md:flex">
+          {/* <Button variant="ghost" size="icon" className="hidden md:flex">
             <Settings className="h-5 w-5" />
-          </Button>
+          </Button> */}
 
           {/* Real-time Notifications */}
           <NotificationDropdown />
@@ -236,7 +235,7 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
                   <p className="text-xs leading-none text-muted-foreground">{user?.email || "admin@example.com"}</p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
+              {/* <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/admin/profile" className="flex cursor-pointer items-center">
                   <User className="mr-2 h-4 w-4" />
@@ -248,7 +247,7 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Paramètres</span>
                 </Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut} className="text-red-600 cursor-pointer">
                 {isLoggingOut ? (

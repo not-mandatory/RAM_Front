@@ -21,7 +21,7 @@ export default function LoginPage() {
         </div>
 
         {/* RAM Logo at Top Left */}
-        <div className="absolute top-8 left-8 z-10">
+        {/* <div className="absolute top-8 left-8 z-10">
           <div className="flex items-center gap-0">
             <div className="h-12 w-32 relative">
               <Image
@@ -37,20 +37,18 @@ export default function LoginPage() {
               <div className="text-sm opacity-90 leading-tight">Système d'Évaluation</div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Bottom Content */}
         <div className="absolute bottom-8 left-8 right-8 text-white z-10">
           <div className="space-y-4">
             <h2 className="text-3xl font-bold leading-tight">
-              Système d'Évaluation
+              Plateforme d'Évaluation
               <br />
               de Projets
             </h2>
             <p className="text-lg opacity-90 leading-relaxed">
-              Plateforme dédiée à l'excellence opérationnelle et à l'innovation continue au service de l'aviation
-              marocaine.
-            </p>
+                Plateforme d’évaluation des projets d’innovation du programme We Innov'8 Make Impact.            </p>
             <div className="flex items-center gap-4 pt-4">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                 <span className="text-sm font-bold">70+</span>
@@ -79,16 +77,18 @@ export default function LoginPage() {
                   sizes="80px"
                 />
               </div>
-              <div className="text-gray-800 -ml-4">
+              {/* <div className="text-gray-800 -ml-4">
                 <div className="font-bold text-lg">ProjectEval</div>
                 <div className="text-xs text-gray-600 leading-tight">Système d'Évaluation</div>
-              </div>
+              </div> */}
             </div>
           </div>
 
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Welcome Back</h1>
-            <p>Sign in to access your project evaluation dashboard</p>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Bon retour
+</h1>
+            <p>Connectez-vous pour accéder à la plateforme.
+</p>
           </div>
 
           <LoginForm />
@@ -105,7 +105,8 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center text-sm text-gray-500">
-            Need help? Contact your <span className="font-medium">system administrator</span>
+            Besoin d’aide?  
+ <span className="font-medium"> Contactez l'administrateur.</span>
           </div>
         </div>
       </div>

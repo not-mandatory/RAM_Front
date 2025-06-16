@@ -132,23 +132,64 @@ export async function createProject(projectData: object)
 }
 
 
-export async function getProjectTeam(id: string): Promise<{
-  team_leader: { name: string; position: string; direction: string }
-  team_members: Array<{ name: string; position: string; direction: string }>
-} | null> {
-  try {
-    const response = await fetch(`http://localhost:3000/api/project/${id}/team`)
+type UserFromBackend = {
+    id: number;
+    username: string; // Use username as your backend returns it
+    position: string;
+    direction: string;
+    is_team_lead: boolean;
+    email?: string; // If email is included
+};
 
-    if (!response.ok) {
-      console.error(`Failed to fetch team data: ${response.status}`)
-      return null
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Error fetching team data:", error)
-    return null
-  }
+// Define the type for the comprehensive project details, including the team
+export interface ProjectDetails {
+    id: string;
+    title: string;
+    description: string;
+    image_path: string;
+    category: string;
+    createdAt?: string; // Optional, if not always present
+    team: { // This structure comes from your combined backend endpoint
+        team_leader: UserFromBackend | null;
+        team_members: UserFromBackend[];
+    };
+    // Add any other top-level project properties here if your backend returns them
 }
+
+
+export async function getProjectDetails(id: string): Promise<ProjectDetails | null> {
+    console.log("Fetching comprehensive project details for ID:", id);
+    try {
+        // IMPORTANT: Ensure this URL points to your Flask backend (http://localhost:5000)
+        // and matches the combined endpoint path.
+        const response = await fetch(`http://localhost:5000/project/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                // You might need an Authorization header here if this route is JWT protected
+                // 'Authorization': `Bearer ${yourJwtToken}`
+            },
+            cache: "no-store", // Useful for always fetching fresh data, especially for edit pages
+        });
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.warn(`Project with ID ${id} not found.`);
+                return null;
+            }
+            const errorData = await response.json();
+            console.error(`Failed to fetch project details for ID ${id}:`, errorData);
+            throw new Error(errorData.error || `Failed to fetch project details: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Successfully fetched project details:", data);
+        return data as ProjectDetails; // Cast to ProjectDetails type
+    } catch (error) {
+        console.error("Error fetching project details:", error);
+        return null; // Return null on error
+    }
+}
+
 
 

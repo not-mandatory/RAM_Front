@@ -1,27 +1,30 @@
-import { getProjectById } from "@/lib/projects"
-import { EvaluationForm } from "@/components/projects/evaluation-form"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Users, Briefcase, Building2, ChevronRight } from "lucide-react"
-import Link from "next/link"
-import { notFound } from "next/navigation"
-import Image from "next/image"
-import type { Project } from "@/types/type"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { getProjectTeam } from "@/lib/projects"
+import { getProjectDetails, ProjectDetails } from "@/lib/projects"; // Import ProjectDetails type from lib
+import { EvaluationForm } from "@/components/projects/evaluation-form";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Users, Briefcase, Building2, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import type { Project } from "@/types/type"; // Keep your Project type
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+// Remove local ProjectDetails definition to avoid type mismatch
 
 export default async function EvaluatePage({ params }: { params: { projectId: any } }) {
-  const project: Project | null = await getProjectById(params.projectId)
+  // Make a single call to get all project details, including the team
+  const project: ProjectDetails | null = await getProjectDetails(params.projectId);
 
-  const teamData = await getProjectTeam(params.projectId)
-
-  console.log("hhhhhhhh", project?.image_path)
+  console.log("Fetched project data:", project);
 
   if (!project) {
-    console.log("Project not found")
-    notFound()
+    console.log("Project not found");
+    notFound();
   }
+
+  // Destructure team data directly from the project object
+  const { team_leader, team_members } = project.team;
 
   const getInitials = (name: string) => {
     return name
@@ -29,8 +32,8 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
       .map((part) => part[0])
       .join("")
       .toUpperCase()
-      .substring(0, 2)
-  }
+      .substring(0, 2);
+  };
 
   // Helper function to get a color based on name
   const getAvatarColor = (name: string) => {
@@ -43,14 +46,14 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
       "bg-pink-100 text-pink-800",
       "bg-indigo-100 text-indigo-800",
       "bg-teal-100 text-teal-800",
-    ]
-    const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    return colors[hash % colors.length]
-  }
+    ];
+    const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 ">
-      <div className="container mx-auto  ">
+      <div className="container mx-auto">
         <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
           <div className="mb-6">
             <Link href="/user/project">
@@ -89,10 +92,10 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
                       project.category === "Revenue Generation"
                         ? "bg-green-100 text-green-800"
                         : project.category === "Customer Experience"
-                          ? "bg-blue-100 text-blue-800"
-                          : project.category === "Operational Performance"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-purple-100 text-purple-800"
+                        ? "bg-blue-100 text-blue-800"
+                        : project.category === "Operational Performance"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-purple-100 text-purple-800"
                     }`}
                   >
                     {project.category}
@@ -106,7 +109,7 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
           </div>
 
           {/* Innovative Team Display */}
-          {teamData && (
+          {project.team && ( // Check if team object exists
             <div className="mb-8 overflow-hidden">
               <h2 className="text-xl font-semibold mb-4 flex items-center">
                 <Users className="mr-2 h-5 w-5 text-primary" />
@@ -115,47 +118,47 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
 
               <div className="relative">
                 {/* Team Lead Section */}
-                {teamData.team_leader && (
+                {team_leader && (
                   <div className="relative z-10">
                     <div className="flex flex-col items-center">
                       <div
-                        className={`h-16 w-16 rounded-full ${getAvatarColor(teamData.team_leader.name)} flex items-center justify-center shadow-md border-2 border-white`}
+                        className={`h-16 w-16 rounded-full ${getAvatarColor(team_leader.username)} flex items-center justify-center shadow-md border-2 border-white`}
                       >
-                        <span className="text-lg font-bold">{getInitials(teamData.team_leader.name)}</span>
+                        <span className="text-lg font-bold">{getInitials(team_leader.username)}</span>
                       </div>
                       <div className="mt-2 text-center">
-                        <h3 className="font-semibold">{teamData.team_leader.name}</h3>
+                        <h3 className="font-semibold">{team_leader.username}</h3>
                         <Badge className="mt-1">Chef d'équipe</Badge>
                       </div>
                       <div className="text-xs text-muted-foreground mt-1 flex items-center">
                         <Building2 className="h-3 w-3 mr-1" />
-                        {teamData.team_leader.direction}
+                        {team_leader.direction}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1 flex items-center">
                         <Briefcase className="h-3 w-3 mr-1" />
-                        {teamData.team_leader.position}
+                        {team_leader.position}
                       </div>
                     </div>
 
                     {/* Connecting line to team members */}
-                    {teamData.team_members.length > 0 && <div className="h-8 w-0.5 bg-gray-200 mx-auto mt-2"></div>}
+                    {team_members.length > 0 && <div className="h-8 w-0.5 bg-gray-200 mx-auto mt-2"></div>}
                   </div>
                 )}
 
                 {/* Team Members Section */}
-                {teamData.team_members.length > 0 && (
+                {team_members.length > 0 && (
                   <div className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      {teamData.team_members.map((member, index) => (
+                      {team_members.map((member, index) => (
                         <TooltipProvider key={index}>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex items-center gap-3 cursor-pointer">
-                                <Avatar className={`h-10 w-10 ${getAvatarColor(member.name)}`}>
-                                  <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+                                <Avatar className={`h-10 w-10 ${getAvatarColor(member.username)}`}>
+                                  <AvatarFallback>{getInitials(member.username)}</AvatarFallback>
                                 </Avatar>
                                 <div className="overflow-hidden">
-                                  <div className="font-medium truncate">{member.name}</div>
+                                  <div className="font-medium truncate">{member.username}</div>
                                   <div className="text-xs text-muted-foreground truncate">{member.position}</div>
                                 </div>
                                 <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto" />
@@ -163,7 +166,7 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
                             </TooltipTrigger>
                             <TooltipContent side="top" className="p-4 max-w-xs">
                               <div className="space-y-2">
-                                <div className="font-semibold">{member.name}</div>
+                                <div className="font-semibold">{member.username}</div>
                                 <div className="text-sm flex items-center">
                                   <Building2 className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                                   {member.direction}
@@ -197,5 +200,5 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
         </div>
       </div>
     </div>
-  )
+  );
 }
