@@ -4,57 +4,39 @@ import Image from "next/image"
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
-      {/* Left side - Full Background Image with Overlays */}
+      {/* Partie gauche – Image de fond avec superposition */}
       <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
-        {/* Full Background Image */}
+        {/* Image de fond */}
         <div className="absolute inset-0">
           <Image
             src="/images/royal-air-maroc.jpg"
-            alt="RAM Background"
+            alt="Fond RAM"
             fill
             className="object-cover"
             sizes="50vw"
             priority
           />
-          {/* Dark overlay for better text readability */}
+          {/* Superposition sombre pour lisibilité */}
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
-        {/* RAM Logo at Top Left */}
-        {/* <div className="absolute top-8 left-8 z-10">
-          <div className="flex items-center gap-0">
-            <div className="h-12 w-32 relative">
-              <Image
-                src="/images/ram-logo.png"
-                alt="Royal Air Maroc Logo"
-                fill
-                className="object-contain object-left"
-                sizes="128px"
-              />
-            </div>
-            <div className="text-white -ml-6">
-              <div className="font-bold text-xl leading-tight">ProjectEval</div>
-              <div className="text-sm opacity-90 leading-tight">Système d'Évaluation</div>
-            </div>
-          </div>
-        </div> */}
-
-        {/* Bottom Content */}
+        {/* Contenu en bas de page */}
         <div className="absolute bottom-8 left-8 right-8 text-white z-10">
           <div className="space-y-4">
             <h2 className="text-3xl font-bold leading-tight">
-              Plateforme d'Évaluation
+              Plateforme
               <br />
-              de Projets
+              d’Évaluation de Projets
             </h2>
             <p className="text-lg opacity-90 leading-relaxed">
-                Plateforme d’évaluation des projets d’innovation du programme We Innov'8 Make Impact.            </p>
+              Plateforme d’évaluation des projets d’innovation dans le cadre du programme We Innov'8 Make Impact.
+            </p>
             <div className="flex items-center gap-4 pt-4">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                 <span className="text-sm font-bold">70+</span>
               </div>
               <div>
-                <div className="font-semibold">Années d'Excellence</div>
+                <div className="font-semibold">Années d’excellence</div>
                 <div className="text-sm opacity-80">Depuis 1953</div>
               </div>
             </div>
@@ -62,33 +44,27 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right side - Login form */}
+      {/* Partie droite – Formulaire de connexion */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
         <div className="w-full max-w-md space-y-8">
-          {/* Mobile Logo */}
+          {/* Logo pour mobile */}
           <div className="flex justify-center lg:hidden">
             <div className="flex items-center gap-0">
               <div className="h-12 w-20 relative">
                 <Image
                   src="/images/ram-logo.png"
-                  alt="Royal Air Maroc Logo"
+                  alt="Logo Royal Air Maroc"
                   fill
                   className="object-contain object-left"
                   sizes="80px"
                 />
               </div>
-              {/* <div className="text-gray-800 -ml-4">
-                <div className="font-bold text-lg">ProjectEval</div>
-                <div className="text-xs text-gray-600 leading-tight">Système d'Évaluation</div>
-              </div> */}
             </div>
           </div>
 
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Bon retour
-</h1>
-            <p>Connectez-vous pour accéder à la plateforme.
-</p>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Bienvenue</h1>
+            <p>Connectez-vous pour accéder à la plateforme.</p>
           </div>
 
           <LoginForm />
@@ -105,8 +81,8 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center text-sm text-gray-500">
-            Besoin d’aide?  
- <span className="font-medium"> Contactez l'administrateur.</span>
+            Besoin d’aide ?  
+            <span className="font-medium"> Contactez l’administrateur.</span>
           </div>
         </div>
       </div>

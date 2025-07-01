@@ -9,16 +9,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Textarea } from "@/components/ui/textarea"
 
-// Define the schema for form validation
 const evaluationSchema = z.object({
-  q1: z.number().min(1, { message: "Veuillez évaluer la désirabilité" }),
-  q2: z.number().min(1, { message: "Veuillez évaluer la viabilité" }),
-  q3: z.number().min(1, { message: "Veuillez évaluer la faisabilité" }),
-  q4: z.number().min(1, { message: "Veuillez évaluer l'alignement corporate" }),
+  q1: z.number().min(1, { message: "Veuillez noter l'attractivité" }),
+  q2: z.number().min(1, { message: "Veuillez noter la viabilité" }),
+  q3: z.number().min(1, { message: "Veuillez noter la faisabilité" }),
+  q4: z.number().min(1, { message: "Veuillez noter l'alignement stratégique" }),
   q5: z.boolean({
     required_error: "Veuillez indiquer si le projet doit continuer",
   }),
+  comment: z.string().optional(),
 })
 
 type EvaluationFormValues = z.infer<typeof evaluationSchema>
@@ -32,7 +33,6 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  // Initialize the form with default values
   const form = useForm<EvaluationFormValues>({
     resolver: zodResolver(evaluationSchema),
     defaultValues: {
@@ -40,8 +40,7 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
       q2: 0,
       q3: 0,
       q4: 0,
-
-      // No default value for qst_bool to ensure user makes a selection
+      comment: "",
     },
   })
 
@@ -49,44 +48,31 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
     setIsSubmitting(true)
 
     try {
-      console.log("Evaluation submitted successfully:", data)
-      console.log("Project ID:", projectId)
+      const response = await fetch(`/api/project/evaluate/${projectId}`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ratings: data }),
+      })
 
-      
-
-      try {
-        const response = await fetch(`/api/project/evaluate/${projectId}`, {
-          method: "POST",
-          credentials: "include",
-          // Include credentials to send cookies with the request
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ratings: data }),
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.message || "Evaluation failed")
-        }
-
-        const result = await response.json()
-        console.log("Evaluation successful:", result)
-
-        // ✅ Only mark as submitted if everything went well
-        setIsSubmitted(true)
-
-        // Redirect after a short delay to show success message
-        setTimeout(() => {
-          router.push("/user/project")
-          router.refresh()
-        }, 6000)
-      } catch (error: any) {
-        console.error("Evaluation error:", error.message)
-        // Optional: Show error to user
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Échec de l’évaluation")
       }
-    } catch (error) {
-      console.error("Failed to submit evaluation:", error)
+
+      const result = await response.json()
+      console.log("Évaluation réussie :", result)
+
+      setIsSubmitted(true)
+
+      setTimeout(() => {
+        router.push("/user/project")
+        router.refresh()
+      }, 6000)
+    } catch (error: any) {
+      console.error("Erreur lors de l’évaluation :", error.message)
     } finally {
       setIsSubmitting(false)
     }
@@ -98,9 +84,9 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
         <div className="rounded-full bg-green-100 p-3 mb-4">
           <CheckCircle2 className="h-8 w-8 text-green-600" />
         </div>
-        <h3 className="text-xl font-semibold mb-2">Évaluation soumise !</h3>
+        <h3 className="text-xl font-semibold mb-2">Évaluation envoyée !</h3>
         <p className="text-muted-foreground mb-6">Merci pour votre retour.</p>
-        <Button onClick={() => router.push("/user/project")}>Retour au votre espace.</Button>
+        <Button onClick={() => router.push("/user/project")}>Retour au tableau de bord</Button>
       </div>
     )
   }
@@ -116,10 +102,10 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel className="text-base font-medium">
-                  1. Désirabilité : le projet semble-t-il résoudre un problème important ?
+                  1. Attractivité : Le projet répond-il à un problème important ?
                 </FormLabel>
                 <FormControl>
-                  <StarRating value={field.value} onChange={(value) => field.onChange(value)} />
+                  <StarRating value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -133,10 +119,10 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel className="text-base font-medium">
-                  2. Viabilité : le projet a-t-il un Business Model à haut potentiel?
+                  2. Viabilité : Le projet dispose-t-il d’un modèle économique prometteur ?
                 </FormLabel>
                 <FormControl>
-                  <StarRating value={field.value} onChange={(value) => field.onChange(value)} />
+                  <StarRating value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,10 +136,10 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel className="text-base font-medium">
-                  3. Faisabilité : le projet semble-t-il réalisable techniquement au sein de la RAM?
+                  3. Faisabilité : Le projet semble-t-il techniquement réalisable au sein de RAM ?
                 </FormLabel>
                 <FormControl>
-                  <StarRating value={field.value} onChange={(value) => field.onChange(value)} />
+                  <StarRating value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -167,25 +153,24 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel className="text-base font-medium">
-                  4. Alignement Corporate : le projet est-il aligné avec la stratégie de la RAM et a-t-il un sponsor
-                  prêt à le suivre jusqu'au bout ?
+                  4. Alignement stratégique : Le projet est-il aligné avec la stratégie de RAM et soutenu par un sponsor ?
                 </FormLabel>
                 <FormControl>
-                  <StarRating value={field.value} onChange={(value) => field.onChange(value)} />
+                  <StarRating value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Question 5 (Boolean) - Required with no default selection */}
+          {/* Question 5 */}
           <FormField
             control={form.control}
             name="q5"
             render={({ field }) => (
               <FormItem className="space-y-3 pt-2">
                 <FormLabel className="text-base font-medium">
-                  5. Selon vous le projet doit-il continuer ? <span className="text-red-500">*</span>
+                  5. Selon vous, le projet doit-il continuer ? <span className="text-red-500">*</span>
                 </FormLabel>
                 <div className="flex gap-4 mt-2">
                   <Button
@@ -205,6 +190,25 @@ export function EvaluationForm({ projectId }: EvaluationFormProps) {
                     Non
                   </Button>
                 </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Commentaire libre */}
+          <FormField
+            control={form.control}
+            name="comment"
+            render={({ field }) => (
+              <FormItem className="space-y-3 pt-2">
+                <FormLabel className="text-base font-medium">Commentaire supplémentaire (facultatif)</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Partagez vos idées, suggestions ou préoccupations concernant ce projet..."
+                    className="min-h-[100px] resize-none"
+                    {...field}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

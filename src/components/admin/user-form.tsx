@@ -4,18 +4,25 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { createUser } from "@/lib/users"
 
 const userSchema = z.object({
-  username: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().optional(), // Allow empty for update
-  position: z.string().min(1, { message: "Position is required." }),
-  direction: z.string().min(1, { message: "Direction is required." }),
+  username: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
+  email: z.string().email({ message: "Veuillez saisir une adresse email valide." }),
+  password: z.string().optional(),
+  position: z.string().min(1, { message: "Le poste est obligatoire." }),
+  direction: z.string().min(1, { message: "Le département est obligatoire." }),
 })
 
 type UserFormValues = z.infer<typeof userSchema>
@@ -55,8 +62,7 @@ export function UserForm({ user }: UserFormProps = {}) {
     setError(null)
     try {
       if (user) {
-        // UPDATE user
-        // Only send password if filled
+        // Mettre à jour l'utilisateur
         const updateBody: any = {
           username: values.username,
           email: values.email,
@@ -73,20 +79,18 @@ export function UserForm({ user }: UserFormProps = {}) {
         })
         if (!res.ok) {
           const data = await res.json()
-          setError(data.error || "Failed to update user.")
+          setError(data.error || "Échec de la mise à jour de l'utilisateur.")
           setIsSubmitting(false)
           return
         }
       } else {
-        // CREATE user
-        console.log("inside create user function")
+        // Créer un nouvel utilisateur
         await createUser(values)
-        
       }
       router.push("/admin/user")
       router.refresh()
     } catch (error) {
-      setError("Failed to save user.")
+      setError("Échec de l'enregistrement de l'utilisateur.")
       setIsSubmitting(false)
     }
   }
@@ -102,7 +106,7 @@ export function UserForm({ user }: UserFormProps = {}) {
               <FormItem>
                 <FormLabel>Nom complet</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entrer le nom complet" {...field} />
+                  <Input placeholder="Entrez le nom complet" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,9 +118,13 @@ export function UserForm({ user }: UserFormProps = {}) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Adresse mail</FormLabel>
+                <FormLabel>Adresse email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entrez l’adresse e-mail de l’évaluateur" type="email" {...field} />
+                  <Input
+                    placeholder="Entrez l'adresse email"
+                    type="email"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -128,9 +136,29 @@ export function UserForm({ user }: UserFormProps = {}) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{user ? "Nouveau mot de passe (laisser vide pour conserver l’actuel)" : "Password"}</FormLabel>
+                <FormLabel>
+                  {user
+                    ? "Nouveau mot de passe (laisser vide pour garder l'actuel)"
+                    : "Mot de passe"}
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Entrer mot de passe" type="password" {...field} />
+                  <Input placeholder="Entrez le mot de passe" type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="direction"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Direction</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Entrez le département ou la division de l'évaluateur"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -144,41 +172,33 @@ export function UserForm({ user }: UserFormProps = {}) {
               <FormItem>
                 <FormLabel>Position</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entrer la position de l'évaluateur" {...field} />
+                  <Input placeholder="Entrez le poste de l'évaluateur" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="direction"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Direction</FormLabel>
-                <FormControl>
-                  <Input placeholder="Entrer la direction/département de l'évaluateur" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          
 
           {error && <div className="text-red-600">{error}</div>}
 
           <div className="flex gap-4 justify-end">
-            <Button type="button" variant="outline" onClick={() => router.push("/admin/user")}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/admin/user")}
+            >
               Annuler
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                  {user ? "Mise à jour en cours..." : "Création en cours..."}
+                  {user ? "Mise à jour..." : "Création..."}
                 </>
               ) : user ? (
-                "Mettre à jour l’évaluateur"
+                "Mettre à jour l'évaluateur"
               ) : (
                 "Créer un nouvel évaluateur"
               )}

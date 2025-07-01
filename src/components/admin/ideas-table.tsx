@@ -136,13 +136,13 @@ export function IdeasTable() {
 
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
-      case "génération de revenus":
+      case "revenue generation":
         return "bg-green-100 text-green-800 border-green-200"
-      case "expérience client":
+      case "customer experience":
         return "bg-blue-100 text-blue-800 border-blue-200"
-      case "performance opérationnelle":
+      case "operational performance":
         return "bg-yellow-100 text-yellow-800 border-yellow-200"
-      case "développement durable":
+      case "sustainable development":
         return "bg-emerald-100 text-emerald-800 border-emerald-200"
       default:
         return "bg-gray-100 text-gray-800 border-gray-200"

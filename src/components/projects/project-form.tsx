@@ -55,12 +55,12 @@ const projectSchema = z.object({
   description: z.string().min(10, {
     message: "Description must be at least 10 characters.",
   }),
-  category: z.enum(
-    ["Développement durable", "Performance opérationnelle", "Expérience client", "Génération de revenus"],
-    {
-      required_error: "Please select a category.",
-    },
-  ),
+  // category: z.enum(
+  //   ["Développement durable", "Performance opérationnelle", "Expérience client", "Génération de revenus"],
+  //   {
+  //     required_error: "Please select a category.",
+  //   },
+  // ),
   // Team lead information
   teamLeadId: z.number().min(1, {
     message: "Team lead selection is required.",
@@ -77,7 +77,6 @@ type Project = {
   title: string
   description: string
   createdAt: string
-  category: string
   teamLeadId?: string
   image?: string
   image_path?: string
@@ -117,7 +116,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
   const [removeImage, setRemoveImage] = useState(false);
   const [users, setUsers] = useState<User[]>([])
 
-  console.log("ideaId from search params:", ideaId)
+  // console.log("ideaId from search params:", ideaId)
 
   // Create form with default values
   const form = useForm<ProjectFormValues>({
@@ -125,12 +124,12 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
     defaultValues: {
       title: project?.title || "",
       description: project?.description || "",
-      category:
-        (project?.category as
-          | "Développement durable"
-          | "Performance opérationnelle"
-          | "Expérience client"
-          | "Génération de revenus") || undefined,
+      // category:
+      //   (project?.category as
+      //     | "Développement durable"
+      //     | "Performance opérationnelle"
+      //     | "Expérience client"
+      //     | "Génération de revenus") || undefined,
       // Add default values for team information
       teamLeadId: project?.teamLeadId ? parseInt(project.teamLeadId, 10) || undefined : undefined,
       // Initialize team members array
@@ -176,7 +175,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
           form.reset({
             title: ideaData.title || "",
             description: ideaData.description || "",
-            category: ideaData.category || undefined,
+            // category: ideaData.category || undefined,
             teamLeadId: undefined,
             teamMembers: [],
     });
@@ -297,6 +296,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
 
   // Update the onSubmit function to include team information
   async function onSubmit(values: ProjectFormValues) {
+    
     setIsSubmitting(true)
 
     try {
@@ -306,11 +306,12 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
       // Add form fields to FormData
       formData.append("title", values.title)
       formData.append("description", values.description)
-      formData.append("category", values.category)
+      // formData.append("category", values.category)
 
       if (removeImage) {
         // If the user chose to remove the image, add a flag
         formData.append("removeImage", "true")
+        console.log("Removing image from project")
       }
 
       // Add team lead ID
@@ -323,9 +324,13 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
 
       // Add file if selected
       if (selectedFile) {
+        formData.set("removeImage", "false")
+
         formData.append("image", selectedFile)
+
       } else if (imagePreview && imagePreview.startsWith("http")) {
         // If using an image URL, pass it as a string
+        formData.set("removeImage", "false")
         formData.append("imageUrl", imagePreview)
       }
 
@@ -345,7 +350,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
       }
 
       console.log("Submitting form with values:", values)
-      console.log("Form data:", formData)
+      console.log("Form data:", formData.values())
       //console.log("Selected file:", selectedFile)
 
       // Send the form data to the server
@@ -442,7 +447,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="category"
                 render={({ field }) => (
@@ -464,7 +469,7 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </CardContent>
           </Card>
 

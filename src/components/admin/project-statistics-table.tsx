@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Search, SlidersHorizontal, ArrowUpDown, Check, X } from "lucide-react"
+import { Search, ArrowUpDown, Check, X } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 interface Evaluation {
@@ -23,114 +22,94 @@ interface Evaluation {
 
 interface ProjectStatisticsTableProps {
   evaluations: Evaluation[]
-  initialSearchTerm?: string
+  searchTerm?: string
 }
 
-export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: ProjectStatisticsTableProps) {
+export function ProjectStatisticsTable({
+  evaluations,
+  searchTerm: initialSearchTerm = "",
+}: ProjectStatisticsTableProps) {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm)
   const [sortField, setSortField] = useState<keyof Evaluation>("date")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
 
-  // Set initial search term from props
+  // keep local input state in sync with prop changes
   useEffect(() => {
-    if (initialSearchTerm) {
-      setSearchTerm(initialSearchTerm)
+    setSearchTerm(initialSearchTerm)
+  }, [initialSearchTerm])
 
-      // Find and scroll to the matching row without highlighting
-      if (evaluations.length > 0) {
-        const searchTermLower = initialSearchTerm.toLowerCase()
-        const matchingEvaluation = evaluations.find((evaluation) => {
-          const projectNameLower = evaluation.projectName.toLowerCase()
-          const userNameLower = evaluation.userName.toLowerCase()
-          const combinedString = `${projectNameLower} ${userNameLower}`
+  // automatic scroll on first load with search
+  useEffect(() => {
+    if (initialSearchTerm && evaluations.length > 0) {
+      const searchTermLower = initialSearchTerm.toLowerCase()
+      const matchingEvaluation = evaluations.find((evaluation) => {
+        const combined = `${evaluation.projectName.toLowerCase()} ${evaluation.userName.toLowerCase()}`
+        const keywords = searchTermLower.split(/\s+/).filter(Boolean)
+        return keywords.every((kw) => combined.includes(kw))
+      })
 
-          // Check if the search term matches both project and user
-          const searchKeywords = searchTermLower.split(/\s+/).filter((keyword) => keyword.length > 0)
-          return searchKeywords.every((keyword) => combinedString.includes(keyword))
-        })
-
-        if (matchingEvaluation) {
-          setTimeout(() => {
-            const element = document.getElementById(`evaluation-row-${matchingEvaluation.id}`)
-            if (element) {
-              element.scrollIntoView({ behavior: "smooth", block: "center" })
-            }
-          }, 500)
-        }
+      if (matchingEvaluation) {
+        setTimeout(() => {
+          const el = document.getElementById(`evaluation-row-${matchingEvaluation.id}`)
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" })
+        }, 500)
       }
     }
   }, [initialSearchTerm, evaluations])
 
-  // --- Enhanced filter for AND/OR search logic ---
   const filteredEvaluations = evaluations.filter((evaluation) => {
     if (!searchTerm.trim()) return true
 
-    const searchTermLower = searchTerm.toLowerCase().trim()
-    const projectNameLower = evaluation.projectName.toLowerCase()
-    const userNameLower = evaluation.userName.toLowerCase()
+    const lowerTerm = searchTerm.toLowerCase()
+    const project = evaluation.projectName.toLowerCase()
+    const user = evaluation.userName.toLowerCase()
+    const keywords = lowerTerm.split(/\s+/).filter(Boolean)
 
-    // Split search term by spaces to handle multiple keywords
-    const searchKeywords = searchTermLower.split(/\s+/).filter((keyword) => keyword.length > 0)
-
-    if (searchKeywords.length === 1) {
-      // OR logic: match if either project or user contains the keyword
-      const keyword = searchKeywords[0]
-      return projectNameLower.includes(keyword) || userNameLower.includes(keyword)
+    if (keywords.length === 1) {
+      return project.includes(keywords[0]) || user.includes(keywords[0])
     }
 
-    if (searchKeywords.length === 2) {
-      // AND logic: require both keywords to be present, one in project, one in user (any order)
-      const [first, second] = searchKeywords
-      const firstInProject = projectNameLower.includes(first)
-      const secondInUser = userNameLower.includes(second)
-      const firstInUser = userNameLower.includes(first)
-      const secondInProject = projectNameLower.includes(second)
-      return (firstInProject && secondInUser) || (firstInUser && secondInProject)
+    if (keywords.length === 2) {
+      const [a, b] = keywords
+      return (project.includes(a) && user.includes(b)) || (project.includes(b) && user.includes(a))
     }
 
-    // If more than two keywords, require all keywords to be present in either field (flexible AND)
-    return searchKeywords.every(
-      (keyword) => projectNameLower.includes(keyword) || userNameLower.includes(keyword)
-    )
+    return keywords.every((kw) => project.includes(kw) || user.includes(kw))
   })
 
-  // Sort evaluations
   const sortedEvaluations = [...filteredEvaluations].sort((a, b) => {
     if (sortField === "date") {
       return sortDirection === "asc"
         ? new Date(a.date).getTime() - new Date(b.date).getTime()
         : new Date(b.date).getTime() - new Date(a.date).getTime()
     }
-    const aValue = a[sortField]
-    const bValue = b[sortField]
 
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      return sortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
-    }
+    const aVal = a[sortField]
+    const bVal = b[sortField]
 
-    if (typeof aValue === "number" && typeof bValue === "number") {
-      return sortDirection === "asc" ? aValue - bValue : bValue - aValue
-    }
-
-    if (typeof aValue === "boolean" && typeof bValue === "boolean") {
+    if (typeof aVal === "string")
       return sortDirection === "asc"
-        ? aValue === bValue
+        ? aVal.localeCompare(bVal as string)
+        : (bVal as string).localeCompare(aVal)
+    if (typeof aVal === "number")
+      return sortDirection === "asc" ? aVal - (bVal as number) : (bVal as number) - aVal
+    if (typeof aVal === "boolean")
+      return sortDirection === "asc"
+        ? aVal === bVal
           ? 0
-          : aValue
-            ? 1
-            : -1
-        : aValue === bValue
-          ? 0
-          : aValue
-            ? -1
-            : 1
-    }
+          : aVal
+          ? 1
+          : -1
+        : aVal === bVal
+        ? 0
+        : aVal
+        ? -1
+        : 1
 
     return 0
   })
 
-  // Calculate column averages
   const columnAverages = {
     quality: calculateAverage(filteredEvaluations.map((e) => e.quality)),
     timeliness: calculateAverage(filteredEvaluations.map((e) => e.timeliness)),
@@ -138,28 +117,30 @@ export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: 
     usability: calculateAverage(filteredEvaluations.map((e) => e.usability)),
   }
 
-  // Handle sort
   const handleSort = (field: keyof Evaluation) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
     } else {
       setSortField(field)
       setSortDirection("asc")
     }
   }
 
-  // Calculate row average (mean of all ratings for a single evaluation)
   const calculateRowAverage = (evaluation: Evaluation) => {
-    return (evaluation.quality + evaluation.timeliness + evaluation.communication + evaluation.usability) / 4
+    return (
+      (evaluation.quality +
+        evaluation.timeliness +
+        evaluation.communication +
+        evaluation.usability) /
+      4
+    )
   }
 
-  // Clear search and update URL
   const clearSearch = () => {
     setSearchTerm("")
-    // Remove search parameter from URL
     const newUrl = new URL(window.location.href)
     newUrl.searchParams.delete("search")
-    router.replace(newUrl.pathname)
+    router.replace(newUrl.pathname)  // replace to avoid history spam
   }
 
   return (
@@ -185,78 +166,32 @@ export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: 
             </Button>
           )}
         </div>
-        
-        {/* <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2">
-              <SlidersHorizontal className="h-4 w-4" />
-              <span className="hidden sm:inline">Filter</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[200px]">
-            <DropdownMenuItem onClick={() => setSearchTerm("")}>Toutes les évaluations</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSearchTerm("Project A")}>Filter by "Project A"</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSearchTerm("John")}>Filter by "John"</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setSearchTerm("Project A John")}>
-              Filter by "Project A John"
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu> */}
       </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[250px]">
-                <div className="flex items-center gap-1 cursor-pointer" onClick={() => handleSort("projectName")}>
+              <TableHead className="w-[250px] cursor-pointer" onClick={() => handleSort("projectName")}>
+                <div className="flex items-center gap-1">
                   Projet / Évaluateur
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
-              <TableHead className="text-center">
-                <div
-                  className="flex items-center justify-center gap-1 cursor-pointer"
-                  onClick={() => handleSort("quality")}
-                >
-                  Désirabilité
-                  <ArrowUpDown className="h-3 w-3" />
-                </div>
+              <TableHead className="text-center cursor-pointer" onClick={() => handleSort("quality")}>
+                <div className="flex justify-center items-center gap-1">Désirabilité <ArrowUpDown className="h-3 w-3" /></div>
               </TableHead>
-              <TableHead className="text-center">
-                <div
-                  className="flex items-center justify-center gap-1 cursor-pointer"
-                  onClick={() => handleSort("timeliness")}
-                >
-                  Viabilité
-                  <ArrowUpDown className="h-3 w-3" />
-                </div>
+              <TableHead className="text-center cursor-pointer" onClick={() => handleSort("timeliness")}>
+                <div className="flex justify-center items-center gap-1">Viabilité <ArrowUpDown className="h-3 w-3" /></div>
               </TableHead>
-              <TableHead className="text-center">
-                <div
-                  className="flex items-center justify-center gap-1 cursor-pointer"
-                  onClick={() => handleSort("communication")}
-                >
-                  Faisabilité
-                  <ArrowUpDown className="h-3 w-3" />
-                </div>
+              <TableHead className="text-center cursor-pointer" onClick={() => handleSort("communication")}>
+                <div className="flex justify-center items-center gap-1">Faisabilité <ArrowUpDown className="h-3 w-3" /></div>
               </TableHead>
-              <TableHead className="text-center">
-                <div
-                  className="flex items-center justify-center gap-1 cursor-pointer"
-                  onClick={() => handleSort("usability")}
-                >
-                  Alignement Corporate
-                  <ArrowUpDown className="h-3 w-3" />
-                </div>
+              <TableHead className="text-center cursor-pointer" onClick={() => handleSort("usability")}>
+                <div className="flex justify-center items-center gap-1">Alignement Corporate <ArrowUpDown className="h-3 w-3" /></div>
               </TableHead>
-              <TableHead className="text-center">
-                <div
-                  className="flex items-center justify-center gap-1 cursor-pointer"
-                  onClick={() => handleSort("wouldRecommend")}
-                >
-                  Recommander
-                  <ArrowUpDown className="h-3 w-3" />
-                </div>
+              <TableHead className="text-center cursor-pointer" onClick={() => handleSort("wouldRecommend")}>
+                <div className="flex justify-center items-center gap-1">Recommandation <ArrowUpDown className="h-3 w-3" /></div>
               </TableHead>
               <TableHead className="text-center">Moyenne</TableHead>
             </TableRow>
@@ -285,13 +220,9 @@ export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: 
                   </TableCell>
                   <TableCell className="text-center">
                     {evaluation.wouldRecommend ? (
-                      <div className="flex justify-center">
-                        <Check className="h-5 w-5 text-green-600" />
-                      </div>
+                      <Check className="h-5 w-5 text-green-600 mx-auto" />
                     ) : (
-                      <div className="flex justify-center">
-                        <X className="h-5 w-5 text-red-600" />
-                      </div>
+                      <X className="h-5 w-5 text-red-600 mx-auto" />
                     )}
                   </TableCell>
                   <TableCell className="text-center font-medium">
@@ -302,21 +233,24 @@ export function ProjectStatisticsTable({ evaluations, initialSearchTerm = "" }: 
             ) : (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  {searchTerm ? `No evaluations found matching "${searchTerm}"` : "Aucune évaluation trouvée."}
+                  {searchTerm
+                    ? `Aucune évaluation trouvée pour "${searchTerm}"`
+                    : "Aucune évaluation trouvée."}
                 </TableCell>
               </TableRow>
             )}
-            {/* Average row */}
             {filteredEvaluations.length > 0 && (
               <TableRow className="bg-muted/50 font-medium">
-                <TableCell>Moyenne de la colonne</TableCell>
+                <TableCell>Moyenne des colonnes</TableCell>
                 <TableCell className="text-center">{columnAverages.quality.toFixed(1)}</TableCell>
                 <TableCell className="text-center">{columnAverages.timeliness.toFixed(1)}</TableCell>
                 <TableCell className="text-center">{columnAverages.communication.toFixed(1)}</TableCell>
                 <TableCell className="text-center">{columnAverages.usability.toFixed(1)}</TableCell>
                 <TableCell className="text-center">
                   {`${Math.round(
-                    (filteredEvaluations.filter((e) => e.wouldRecommend).length / filteredEvaluations.length) * 100,
+                    (filteredEvaluations.filter((e) => e.wouldRecommend).length /
+                      filteredEvaluations.length) *
+                      100
                   )}%`}
                 </TableCell>
                 <TableCell className="text-center">
@@ -350,5 +284,5 @@ function RatingBadge({ rating }: { rating: number }) {
 
 function calculateAverage(values: number[]): number {
   if (values.length === 0) return 0
-  return values.reduce((sum, value) => sum + value, 0) / values.length
+  return values.reduce((sum, val) => sum + val, 0) / values.length
 }

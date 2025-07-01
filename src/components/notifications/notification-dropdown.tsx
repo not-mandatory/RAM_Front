@@ -30,9 +30,12 @@ export function NotificationDropdown() {
     if (notification.related_id) {
       if (notification.title.toLowerCase().includes("idée") || notification.message.toLowerCase().includes("idée")) {
         try {
-          const ideaTitleMatch = notification.message.match(/a soumis une nouvelle idée : '([^']+)'/)
+          //const ideaTitleMatch = notification.message.match(/a soumis une nouvelle idée : '([^']+)'/)
+          const ideaTitleMatch = notification.message.match(/has submitted a new idea: '([^']+)'/)
           const ideaTitle = ideaTitleMatch ? ideaTitleMatch[1] : ""
           const searchParams = new URLSearchParams()
+          console.log("Navigating to idea with title:", ideaTitle)
+          console.log("Current search params:", searchParams.toString())
           if (ideaTitle) {
             searchParams.set("search", ideaTitle)
           }
@@ -47,8 +50,16 @@ export function NotificationDropdown() {
         notification.message.toLowerCase().includes("projet")
       ) {
         try {
+
+          // notification_message = f"Le projet '{project.title}' a été évalué par l'utilisateur '{current_user.username}'."
+
+
           const projectMatch = notification.message.match(/Le projet '([^']+)' a été évalué/)
           const userMatch = notification.message.match(/par l'utilisateur '([^']+)'/)
+
+          //notification_message = f"The project '{project.title}' has been evaluated by the user '{current_user.username}'."
+
+        
           const projectTitle = projectMatch ? projectMatch[1] : ""
           const username = userMatch ? userMatch[1] : ""
           const searchTerm = `${projectTitle} ${username}`.trim()
@@ -57,7 +68,8 @@ export function NotificationDropdown() {
             searchParams.set("search", searchTerm)
           }
           const url = `/admin/statistics${searchParams.toString() ? `?${searchParams.toString()}` : ""}`
-          router.push(url)
+          window.location.href = url; 
+
         } catch (error) {
           console.error("Error navigating to project evaluation:", error)
           router.push("/admin/statistics")
@@ -82,7 +94,7 @@ export function NotificationDropdown() {
 
   const getNotificationActionText = (notification: any) => {
     if (notification.title.toLowerCase().includes("idée") || notification.message.toLowerCase().includes("soumise")) {
-      return "Voir les détails de l’idée"
+      return "View idea details"
     } else if (
       notification.title.toLowerCase().includes("évaluation") ||
       notification.message.toLowerCase().includes("projet")

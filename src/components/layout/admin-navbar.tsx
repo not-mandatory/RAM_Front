@@ -43,7 +43,6 @@ interface AdminNavbarProps {
 
 export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
   const pathname = usePathname()
-
   const { user, logout } = useAuth()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
@@ -52,37 +51,26 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
     try {
       await logout()
     } catch (err) {
-      console.error("Error during logout:", err)
+      console.error("Erreur lors de la déconnexion :", err)
     } finally {
       setIsLoggingOut(false)
     }
   }
 
-  // Get user initials for avatar
   const getInitials = (name?: string) => {
     if (!name) return ""
     return name
       .split(" ")
-      .map((part) => (part[1] ? part[0] + part[1] : part[0])) // Take first two letters if available
+      .map((part) => (part[1] ? part[0] + part[1] : part[0]))
       .join("")
       .toUpperCase()
   }
 
   const navItems = [
-    // {
-    //   name: "Tableau de Bord",
-    //   href: "/admin",
-    //   icon: <LayoutDashboard className="h-4 w-4" />,
-    // },
     {
       name: "Projets",
       href: "/admin/project",
       icon: <Plane className="h-4 w-4" />,
-    },
-    {
-      name: "Idées",
-      href: "/admin/ideas",
-      icon: <Lightbulb className="h-4 w-4" />,
     },
     {
       name: "Statistiques",
@@ -90,7 +78,7 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
       icon: <BarChart2 className="h-4 w-4" />,
     },
     {
-      name: "Évaluateur",
+      name: "Évaluateurs",
       href: "/admin/user",
       icon: <Users className="h-4 w-4" />,
     },
@@ -100,34 +88,27 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container flex h-16 items-center">
         <div className="flex gap-6 md:gap-10">
-          {/* Logo */}
+          {/* Logo */} 
           <Link href="/admin" className="hidden items-center space-x-2 md:flex">
             <div className="relative">
               <div className="h-16 w-40 relative">
-                              <Image
-                                src="/images/ram-logo.png"
-                                alt="Royal Air Maroc Logo"
-                                fill
-                                className="object-contain object-left"
-                                sizes="160px"
-                              />
-                </div>
-              {/* <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-600" /> */}
+                <Image
+                  src="/images/ram-logo.png"
+                  alt="Logo Royal Air Maroc"
+                  fill
+                  className="object-contain object-left"
+                  sizes="160px"
+                />
+              </div>
             </div>
-            {/* <div className="flex flex-col">
-              <span className="font-bold text-lg leading-tight bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-                RAM Admin
-              </span>
-              <span className="text-[10px] leading-none text-muted-foreground">Royal Air Maroc</span>
-            </div> */}
           </Link>
 
-          {/* Mobile menu */}
+          {/* Menu mobile */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
+                <span className="sr-only">Ouvrir le menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
@@ -165,7 +146,7 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
             </SheetContent>
           </Sheet>
 
-          {/* Desktop navigation */}
+          {/* Navigation desktop */}
           <nav className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
               <Link
@@ -184,7 +165,7 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          {/* Language selector */}
+          {/* Sélecteur de langue */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="hidden md:flex">
@@ -198,24 +179,19 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
               </DropdownMenuItem>
               <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                 <Languages className="h-4 w-4" />
-                <span>العربية</span>
+                <span>Arabe</span>
               </DropdownMenuItem>
               <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                 <Languages className="h-4 w-4" />
-                <span>English</span>
+                <span>Anglais</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Settings */}
-          {/* <Button variant="ghost" size="icon" className="hidden md:flex">
-            <Settings className="h-5 w-5" />
-          </Button> */}
-
-          {/* Real-time Notifications */}
+          {/* Notifications */}
           <NotificationDropdown />
 
-          {/* User menu */}
+          {/* Profil utilisateur */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 gap-1 pl-0">
@@ -235,30 +211,17 @@ export function AdminNavbar({ user: propUser, onLogout }: AdminNavbarProps) {
                   <p className="text-xs leading-none text-muted-foreground">{user?.email || "admin@example.com"}</p>
                 </div>
               </DropdownMenuLabel>
-              {/* <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/admin/profile" className="flex cursor-pointer items-center">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Mon Profil</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/settings" className="flex cursor-pointer items-center">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Paramètres</span>
-                </Link>
-              </DropdownMenuItem> */}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut} className="text-red-600 cursor-pointer">
                 {isLoggingOut ? (
                   <>
                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    <span>Logging out...</span>
+                    <span>Déconnexion...</span>
                   </>
                 ) : (
                   <>
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Déconnexion</span>
+                    <span>Se déconnecter</span>
                   </>
                 )}
               </DropdownMenuItem>

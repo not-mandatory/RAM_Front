@@ -25,8 +25,8 @@ type User = {
   username: string
   email: string
   role: "admin" | "user"
-  position: string,
-  direction: string,
+  position: string
+  direction: string
   createdAt: string
 }
 
@@ -46,7 +46,7 @@ export function UserManagementTable() {
         setFilteredUsers(data)
         setIsLoading(false)
       } catch (error) {
-        console.error("Failed to fetch users:", error)
+        console.error("Échec de la récupération des utilisateurs :", error)
         setIsLoading(false)
       }
     }
@@ -74,7 +74,7 @@ export function UserManagementTable() {
   }
 
   const handleDeleteConfirm = async () => {
-    
+    // Logique de suppression ici
   }
 
   return (
@@ -84,7 +84,7 @@ export function UserManagementTable() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Rechercher des évaluateurs..."
+            placeholder="Rechercher un évaluateur..."
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -106,7 +106,7 @@ export function UserManagementTable() {
                 <TableHead>Rôle</TableHead>
                 <TableHead>Direction</TableHead>
                 <TableHead>Position</TableHead>
-                <TableHead>Crée en</TableHead>
+                <TableHead>Date de création</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -134,7 +134,7 @@ export function UserManagementTable() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Ouvrir le menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -142,7 +142,7 @@ export function UserManagementTable() {
                           <Link href={`/admin/user/${user.id}/edit`}>
                             <DropdownMenuItem>
                               <Edit className="mr-2 h-4 w-4" />
-                                Modifier
+                              Modifier
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(user.id)}>
@@ -156,7 +156,7 @@ export function UserManagementTable() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     Aucun utilisateur trouvé.
                   </TableCell>
                 </TableRow>
@@ -169,15 +169,15 @@ export function UserManagementTable() {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the user account and all associated data.
+              Cette action est irréversible. Cela supprimera définitivement le compte utilisateur et toutes les données associées.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-600 hover:bg-red-700">
-              Delete
+              Supprimer
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

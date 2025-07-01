@@ -5,18 +5,18 @@ import { useSearchParams } from "next/navigation"
 import { ProjectStatisticsTable } from "@/components/admin/project-statistics-table"
 import { ProjectsOverview } from "@/components/admin/projects-overview"
 import { ProjectsSummaryTable } from "@/components/admin/projects-summary-table"
+import { ProjectCommentsTable } from "@/components/admin/project-comments-table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getAllProjectEvaluations } from "@/lib/projects"
-import { getProjectStatistics } from "@/lib/projects"
+import { getAllProjectEvaluations, getProjectStatistics } from "@/lib/projects"
 
-// Define the type for the API response
+// Définition du type pour la réponse API
 interface EvaluationResponse {
   answers: number[]
   project_title: string
   username: string
 }
 
-// Map the API response to our internal format
+// Transformation de la réponse API vers notre format interne
 interface FormattedEvaluation {
   id: string
   projectName: string
@@ -26,10 +26,10 @@ interface FormattedEvaluation {
   communication: number
   usability: number
   wouldRecommend: boolean
-  date: string // We'll use current date since it's not provided
+  date: string
 }
 
-// New interface for project statistics from API
+// Nouveau type pour les statistiques projets provenant de l'API
 interface ProjectStats {
   avg_qst: number
   mean_qsts: number[]
@@ -40,37 +40,30 @@ interface ProjectStats {
 
 export default function StatisticsPage() {
   const searchParams = useSearchParams()
+  const searchFromUrl = searchParams.get("search") || ""  // always dynamic
   const [evaluationsData, setEvaluationsData] = useState<FormattedEvaluation[]>([])
   const [projectStats, setProjectStats] = useState<ProjectStats[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("table")
 
-  // Initialize search term from URL parameters
-  useEffect(() => {
-    const searchFromUrl = searchParams.get("search")
-    if (searchFromUrl) {
-      setSearchTerm(searchFromUrl)
-    }
-  }, [searchParams])
-
-  // Fetch data on component mount
+  // charger les données au montage
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
       try {
-        const [apiResponse, statsResponse] = await Promise.all([getAllProjectEvaluations(), getProjectStatistics()])
-
+        const [apiResponse, statsResponse] = await Promise.all([
+          getAllProjectEvaluations(),
+          getProjectStatistics()
+        ])
         const formattedEvaluations = formatEvaluations(apiResponse)
         setEvaluationsData(formattedEvaluations)
         setProjectStats(statsResponse)
       } catch (error) {
-        console.error("Error fetching statistics data:", error)
+        console.error("Erreur lors de la récupération des données statistiques :", error)
       } finally {
         setIsLoading(false)
       }
     }
-
     fetchData()
   }, [])
 
@@ -94,37 +87,39 @@ export default function StatisticsPage() {
         <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col gap-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-gray-800">
-              Statistiques des évaluations de projets.
+              Statistiques des évaluations de projets
             </h1>
             <p className="text-muted-foreground mt-2">
-              Consultez et analysez toutes les évaluations de projets soumises par les utilisateurs.
+              Consultez et analysez toutes les évaluations de projets soumises.
             </p>
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-md grid-cols-3">
-              <TabsTrigger value="table">Vue en tableau</TabsTrigger>
-              <TabsTrigger value="summary">Sommaire</TabsTrigger>
+            <TabsList className="grid w-full max-w-lg grid-cols-4">
+              <TabsTrigger value="table">Vue Tableau</TabsTrigger>
+              <TabsTrigger value="comments">Commentaires</TabsTrigger>
+              <TabsTrigger value="summary">Résumé</TabsTrigger>
               <TabsTrigger value="projects">Cartes</TabsTrigger>
             </TabsList>
 
-            {activeTab === "table" && (
-              <TabsContent value="table" className="mt-6">
-                <ProjectStatisticsTable evaluations={evaluationsData} initialSearchTerm={searchTerm} />
-              </TabsContent>
-            )}
+            <TabsContent value="table" className="mt-6">
+              <ProjectStatisticsTable
+                evaluations={evaluationsData}
+                searchTerm={searchFromUrl}
+              />
+            </TabsContent>
 
-            {activeTab === "summary" && (
-              <TabsContent value="summary" className="mt-6">
-                <ProjectsSummaryTable projectStats={projectStats} />
-              </TabsContent>
-            )}
+            <TabsContent value="comments" className="mt-6">
+              <ProjectCommentsTable />
+            </TabsContent>
 
-            {activeTab === "projects" && (
-              <TabsContent value="projects" className="mt-6">
-                <ProjectsOverview projectStats={projectStats} />
-              </TabsContent>
-            )}
+            <TabsContent value="summary" className="mt-6">
+              <ProjectsSummaryTable projectStats={projectStats} />
+            </TabsContent>
+
+            <TabsContent value="projects" className="mt-6">
+              <ProjectsOverview projectStats={projectStats} />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
@@ -132,19 +127,17 @@ export default function StatisticsPage() {
   )
 }
 
-// Helper function to format the API response
+// fonction utilitaire
 function formatEvaluations(apiResponse: EvaluationResponse[]): FormattedEvaluation[] {
-  return apiResponse.map((item, index) => {
-    return {
-      id: `eval-${index}`,
-      projectName: item.project_title,
-      userName: item.username,
-      quality: item.answers[0],
-      timeliness: item.answers[1],
-      communication: item.answers[2],
-      usability: item.answers[3],
-      wouldRecommend: item.answers[4] === 1,
-      date: new Date().toISOString(),
-    }
-  })
+  return apiResponse.map((item, index) => ({
+    id: `eval-${index}`,
+    projectName: item.project_title,
+    userName: item.username,
+    quality: item.answers[0],
+    timeliness: item.answers[1],
+    communication: item.answers[2],
+    usability: item.answers[3],
+    wouldRecommend: item.answers[4] === 1,
+    date: new Date().toISOString(),
+  }))
 }

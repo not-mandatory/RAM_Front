@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input"
 import { Search, ThumbsUp, ThumbsDown } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 
-// Interface for the project statistics from the API
 interface ProjectStats {
   avg_qst: number
   mean_qsts: number[]
@@ -23,7 +22,6 @@ interface ProjectsOverviewProps {
 export function ProjectsOverview({ projectStats }: ProjectsOverviewProps) {
   const [searchTerm, setSearchTerm] = useState("")
 
-  // Filter projects based on search term
   const filteredProjects = projectStats.filter((project) =>
     project.project_title.toLowerCase().includes(searchTerm.toLowerCase()),
   )
@@ -35,7 +33,7 @@ export function ProjectsOverview({ projectStats }: ProjectsOverviewProps) {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Rechercher des projets..."
+            placeholder="Rechercher un projet..."
             className="pl-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -50,7 +48,7 @@ export function ProjectsOverview({ projectStats }: ProjectsOverviewProps) {
           ))
         ) : (
           <div className="text-center py-10 text-muted-foreground col-span-full">
-            No projects found matching your search.
+            Aucun projet ne correspond à votre recherche.
           </div>
         )}
       </div>
@@ -59,13 +57,9 @@ export function ProjectsOverview({ projectStats }: ProjectsOverviewProps) {
 }
 
 function ProjectCard({ project }: { project: ProjectStats }) {
-  // Calculate total evaluations
   const totalEvaluations = project.yes_count + project.no_count
-
-  // Calculate recommendation rate
   const recommendationRate = totalEvaluations > 0 ? Math.round((project.yes_count / totalEvaluations) * 100) : 0
 
-  // Get question names for the mean_qsts array
   const questionNames = ["Désirabilité", "Viabilité", "Faisabilité", "Alignement Corporate"]
 
   return (
@@ -83,8 +77,8 @@ function ProjectCard({ project }: { project: ProjectStats }) {
               recommendationRate >= 70
                 ? "bg-green-100 text-green-800"
                 : recommendationRate >= 50
-                  ? "bg-yellow-100 text-yellow-800"
-                  : "bg-red-100 text-red-800"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-red-100 text-red-800"
             }
           >
             {recommendationRate}% Recommandé
@@ -95,7 +89,7 @@ function ProjectCard({ project }: { project: ProjectStats }) {
         <div className="space-y-6">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Note globale</span>
+              <span className="text-muted-foreground">Note Globale</span>
               <span className="font-medium">{project.avg_qst.toFixed(1)}/5</span>
             </div>
             <Progress value={project.avg_qst * 20} className="h-2" />

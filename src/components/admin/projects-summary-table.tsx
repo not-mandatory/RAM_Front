@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge"
 import { Search, ArrowUpDown, ThumbsUp, ThumbsDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-// Interface for the project statistics from the API
 interface ProjectStats {
   avg_qst: number
   mean_qsts: number[]
@@ -26,12 +25,10 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
   const [sortField, setSortField] = useState<string>("project_title")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
 
-  // Filter projects based on search term
   const filteredProjects = projectStats.filter((project) =>
     project.project_title.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  // Sort projects
   const sortedProjects = [...filteredProjects].sort((a, b) => {
     let aValue, bValue
 
@@ -56,14 +53,9 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
       return 0
     }
 
-    if (sortDirection === "asc") {
-      return aValue - bValue
-    } else {
-      return bValue - aValue
-    }
+    return sortDirection === "asc" ? aValue - bValue : bValue - aValue
   })
 
-  // Handle sort
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
@@ -73,7 +65,6 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
     }
   }
 
-  // Get question names for the mean_qsts array
   const questionNames = ["Désirabilité", "Viabilité", "Faisabilité", "Alignement Corporate"]
 
   return (
@@ -83,7 +74,7 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Rechercher des projets..."
+            placeholder="Rechercher un projet..."
             className="pl-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -168,10 +159,10 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
                         project.avg_qst >= 4
                           ? "bg-green-100 text-green-800"
                           : project.avg_qst >= 3
-                            ? "bg-blue-100 text-blue-800"
-                            : project.avg_qst > 0
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-gray-100 text-gray-800"
+                          ? "bg-blue-100 text-blue-800"
+                          : project.avg_qst > 0
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-800"
                       }
                     >
                       {project.avg_qst.toFixed(1)}
@@ -192,7 +183,7 @@ export function ProjectsSummaryTable({ projectStats }: ProjectsSummaryTableProps
             ) : (
               <TableRow>
                 <TableCell colSpan={8} className="h-24 text-center">
-                  No projects found matching your search.
+                  Aucun projet trouvé pour votre recherche.
                 </TableCell>
               </TableRow>
             )}

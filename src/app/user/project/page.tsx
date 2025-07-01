@@ -5,38 +5,35 @@ import { ProjectCard } from "@/components/projects/project-card"
 import { Project } from "@/types/type"
 import { useEffect, useState } from "react" 
 
-
 export default function DashboardPage() {
+  const [projects, setProjects] = useState<Project[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-    const [projects, setProjects] = useState<Project[]>([])
-    
-    const [isLoading, setIsLoading] = useState(true)
-  
-    useEffect(() => {
-      const fetchProjects = async () => {
-        try {
-          const data = await getUserProjects()
-          console.log("Fetched projects:", data)
-          setProjects(data)
-          setIsLoading(false)
-        } catch (error) {
-          console.error("Failed to fetch projects:", error)
-          setIsLoading(false)
-        }
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await getUserProjects()
+        console.log("Projets récupérés :", data)
+        setProjects(data)
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Échec de la récupération des projets :", error)
+        setIsLoading(false)
       }
-  
-      fetchProjects()
-    }, [])
+    }
 
+    fetchProjects()
+  }, [])
 
   return (
-    
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="container mx-auto">
         <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
           <div className="flex flex-col items-start gap-4 mb-6">
             <h1 className="text-3xl font-bold tracking-tight">Projets</h1>
-            <p className="text-muted-foreground">Sélectionnez un projet pour l'évaluer et fournir un feedback.</p>
+            <p className="text-muted-foreground">
+              Sélectionnez un projet à évaluer.
+            </p>
           </div>
 
           {isLoading ? (
@@ -51,10 +48,8 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
-
         </div>
       </div>
     </div>
   )
 }
-

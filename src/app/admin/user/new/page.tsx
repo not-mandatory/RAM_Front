@@ -1,6 +1,5 @@
-// import { UserForm } from "@/components/admin/user-form"
-
 import { UserForm } from "@/components/admin/user-form"
+
 export default function NewUserPage() {
   return (
     <div className="container mx-auto py-10">
@@ -9,4 +8,3 @@ export default function NewUserPage() {
     </div>
   )
 }
-

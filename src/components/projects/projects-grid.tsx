@@ -1,4 +1,3 @@
-// components/admin/projects-grid.tsx (or wherever your ProjectsGrid is)
 "use client"
 import { getProjects } from "@/lib/projects"
 import { useState, useEffect } from "react"
@@ -36,10 +35,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Image from "next/image"
 
-// --- ADD THIS IMPORT ---
-
-
-// Types (keep them as they are)
+// Types
 type User = {
   name: string
   position: string
@@ -79,11 +75,10 @@ export function ProjectsGrid() {
         })
         setExpandedTeams(initialExpandedTeams)
         setProjects(data)
-        console.log("Fetched projects:", data)
         setFilteredProjects(data)
         setIsLoading(false)
       } catch (error) {
-        console.error("Failed to fetch projects:", error)
+        console.error("Échec du chargement des projets :", error)
         setIsLoading(false)
       }
     }
@@ -117,15 +112,13 @@ export function ProjectsGrid() {
   const handleDeleteConfirm = async () => {
     if (projectToDelete) {
       try {
-        // --- ENSURE deleteProject IS IMPORTED AND AVAILABLE ---
-        await deleteProject(projectToDelete) // This function needs to be defined
-        // --- END ENSURE ---
-
+        // TODO: Importer et définir la fonction deleteProject
+        await deleteProject(projectToDelete)
         setProjects(projects.filter((project) => project.id !== projectToDelete))
         setIsDeleteDialogOpen(false)
         setProjectToDelete(null)
       } catch (error) {
-        console.error("Failed to delete project:", error)
+        console.error("Échec de la suppression du projet :", error)
       }
     }
   }
@@ -144,14 +137,13 @@ export function ProjectsGrid() {
     }))
   }
 
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (name: string) =>
+    name
       .split(" ")
       .map((part) => part[0])
       .join("")
       .toUpperCase()
       .substring(0, 2)
-  }
 
   const getAvatarColor = (name: string) => {
     const colors = [
@@ -173,16 +165,8 @@ export function ProjectsGrid() {
 
   const getValidImageUrl = (imagePath: string | undefined) => {
     if (!imagePath) return null
-    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
-      return imagePath
-    }
-    // Assume relative paths are also valid if they start with a slash
-    if (!imagePath.startsWith("/")) {
-        // If it's a relative path without a leading slash (e.g., 'uploads/image.jpg'),
-        // you might need to prepend a base URL or a slash depending on your setup.
-        // For now, let's assume valid relative paths start with '/' for Next.js Image component
-        return null;
-    }
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) return imagePath
+    if (!imagePath.startsWith("/")) return null
     return imagePath
   }
 
@@ -200,7 +184,7 @@ export function ProjectsGrid() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Rechercher projets ou membres…"
+            placeholder="Rechercher projets…"
             className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -223,11 +207,11 @@ export function ProjectsGrid() {
                   key={project.id}
                   className="overflow-hidden flex flex-col bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-200 hover:-translate-y-1"
                 >
-                  {/* Project Image */}
+                  {/* Image du projet */}
                   <div className="relative w-full h-48 bg-gray-100">
                     {project.image_path && !imageErrors[project.id] && getValidImageUrl(project.image_path) ? (
                       <Image
-                        src={getValidImageUrl(project.image_path)!} // Use ! because we've checked for null
+                        src={getValidImageUrl(project.image_path)!}
                         alt={project.title}
                         fill
                         className="object-cover"
@@ -247,19 +231,16 @@ export function ProjectsGrid() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {/* --- UPDATED LINK HERE --- */}
                           <Link href={`/admin/project/edit/${project.id}`}>
                             <DropdownMenuItem>
                               <Edit className="mr-2 h-4 w-4" />
                               Modifier
                             </DropdownMenuItem>
                           </Link>
-                          {/* --- END UPDATED LINK --- */}
-
-                          <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(project.id)}>
+                          {/* <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(project.id)}>
                             <Trash className="mr-2 h-4 w-4" />
                             Supprimer
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -268,14 +249,13 @@ export function ProjectsGrid() {
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                       <CardTitle className="break-words">{project.title}</CardTitle>
-                      {project.category && (
+                      {/* {project.category && (
                         <Badge>{project.category.charAt(0).toUpperCase() + project.category.slice(1)}</Badge>
-                      )}
+                      )} */}
                     </div>
                   </CardHeader>
 
                   <CardContent className="flex-1 flex flex-col">
-                    {/* Description with fixed height and expand/collapse functionality */}
                     <div className="text-sm text-muted-foreground mb-4">
                       <div
                         className={`${
@@ -294,19 +274,18 @@ export function ProjectsGrid() {
                           {expandedDescriptions[project.id] ? (
                             <>
                               <ChevronUp className="mr-1 h-3 w-3" />
-                              Afficher moins
-
+                              Réduire
                             </>
                           ) : (
                             <>
                               <ChevronDown className="mr-1 h-3 w-3" />
-                              Lire plus
+                              Lire la suite
                             </>
                           )}
                         </Button>
                       )}
                     </div>
-                    {/* Team Section with Collapsible */}
+
                     <Collapsible
                       open={expandedTeams[project.id]}
                       onOpenChange={() => toggleTeam(project.id)}
@@ -329,7 +308,6 @@ export function ProjectsGrid() {
                         </div>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="pt-3 space-y-3">
-                        {/* Team Lead */}
                         {teamLead && (
                           <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-md">
                             <Avatar className={`h-10 w-10 ${getAvatarColor(teamLead.name)}`}>
@@ -339,7 +317,7 @@ export function ProjectsGrid() {
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">{teamLead.name}</span>
                                 <Badge variant="outline" className="text-xs">
-                                  Lead
+                                  Responsable
                                 </Badge>
                               </div>
                               <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
@@ -353,7 +331,7 @@ export function ProjectsGrid() {
                             </div>
                           </div>
                         )}
-                        {/* Team Members */}
+
                         {teamMembers.length > 0 ? (
                           <div className="space-y-2">
                             <div className="text-xs font-medium text-muted-foreground">Membres</div>
@@ -379,14 +357,14 @@ export function ProjectsGrid() {
                             </div>
                           </div>
                         ) : (
-                          <div className="text-sm text-muted-foreground text-center py-2">Aucun membre de l’équipe ajouté</div>
+                          <div className="text-sm text-muted-foreground text-center py-2">Aucun membre ajouté</div>
                         )}
                       </CollapsibleContent>
                     </Collapsible>
                   </CardContent>
                   <CardFooter className="flex justify-between text-xs text-muted-foreground border-t pt-3">
                     {project.createdAt ? (
-                      <span>Created: {new Date(project.createdAt).toLocaleDateString()}</span>
+                      <span>Créé le : {new Date(project.createdAt).toLocaleDateString()}</span>
                     ) : (
                       <span></span>
                     )}
@@ -405,9 +383,9 @@ export function ProjectsGrid() {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer ?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the project and all associated data.
+              Cette action est irréversible. Le projet ainsi que toutes ses données associées seront définitivement supprimés.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -421,4 +399,3 @@ export function ProjectsGrid() {
     </div>
   )
 }
-

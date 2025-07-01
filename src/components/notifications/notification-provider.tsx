@@ -48,6 +48,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       if (response.ok) {
         const data = await response.json()
         setNotifications(data.notifications)
+        console.log("Fetched notifications:", data.notifications)
         setUnreadCount(data.unread_count)
       } else if (response.status === 401) {
         setNotifications([])

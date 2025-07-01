@@ -1,30 +1,26 @@
-import { getProjectDetails, ProjectDetails } from "@/lib/projects"; // Import ProjectDetails type from lib
-import { EvaluationForm } from "@/components/projects/evaluation-form";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Briefcase, Building2, ChevronRight } from "lucide-react";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import type { Project } from "@/types/type"; // Keep your Project type
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-// Remove local ProjectDetails definition to avoid type mismatch
+import { getProjectDetails, ProjectDetails } from "@/lib/projects"
+import { EvaluationForm } from "@/components/projects/evaluation-form"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Users, Briefcase, Building2, ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import Image from "next/image"
+import type { Project } from "@/types/type"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default async function EvaluatePage({ params }: { params: { projectId: any } }) {
-  // Make a single call to get all project details, including the team
-  const project: ProjectDetails | null = await getProjectDetails(params.projectId);
+  const project: ProjectDetails | null = await getProjectDetails(params.projectId)
 
-  console.log("Fetched project data:", project);
+  console.log("Données du projet récupérées :", project)
 
   if (!project) {
-    console.log("Project not found");
-    notFound();
+    console.log("Projet introuvable")
+    notFound()
   }
 
-  // Destructure team data directly from the project object
-  const { team_leader, team_members } = project.team;
+  const { team_leader, team_members } = project.team
 
   const getInitials = (name: string) => {
     return name
@@ -32,10 +28,9 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
       .map((part) => part[0])
       .join("")
       .toUpperCase()
-      .substring(0, 2);
-  };
+      .substring(0, 2)
+  }
 
-  // Helper function to get a color based on name
   const getAvatarColor = (name: string) => {
     const colors = [
       "bg-red-100 text-red-800",
@@ -46,13 +41,13 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
       "bg-pink-100 text-pink-800",
       "bg-indigo-100 text-indigo-800",
       "bg-teal-100 text-teal-800",
-    ];
-    const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return colors[hash % colors.length];
-  };
+    ]
+    const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    return colors[hash % colors.length]
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 ">
+    <div className="min-h-screen bg-gray-100 py-10">
       <div className="container mx-auto">
         <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
           <div className="mb-6">
@@ -62,12 +57,12 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
                 className="pl-0 flex items-center gap-1 text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Retour aux projets.
+                Retour aux projets
               </Button>
             </Link>
           </div>
 
-          {/* Project Header with Image on left, title and description on right */}
+          {/* En-tête du projet avec image à gauche et infos à droite */}
           <div className="flex flex-col md:flex-row gap-6 mb-8">
             {project.image_path && (
               <div className="relative w-full md:w-1/2 h-64 rounded-lg overflow-hidden flex-shrink-0">
@@ -81,11 +76,11 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
               </div>
             )}
 
-            <div className="flex flex-col w-full md:w-1/2">
+            <div className="flex flex-col w-full md:w-1/2 ">
               <h1 className="text-3xl font-bold tracking-tight">{project.title}</h1>
 
-              {/* Category Badge */}
-              <div className="mt-2 mb-4">
+              {/* Catégorie du projet */}
+              {/* <div className="mt-2 mb-4">
                 {project.category && (
                   <span
                     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -101,23 +96,23 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
                     {project.category}
                   </span>
                 )}
-              </div>
+              </div> */}
 
-              {/* Description beneath the title */}
-              <div className="text-muted-foreground whitespace-pre-wrap">{project.description}</div>
+              {/* Description du projet */}
+              <div className="text-muted-foreground whitespace-pre-wrap mt-2">{project.description}</div>
             </div>
           </div>
 
-          {/* Innovative Team Display */}
-          {project.team && ( // Check if team object exists
+          {/* Équipe du projet */}
+          {project.team && (
             <div className="mb-8 overflow-hidden">
               <h2 className="text-xl font-semibold mb-4 flex items-center">
                 <Users className="mr-2 h-5 w-5 text-primary" />
-                Equipe de Projet
+                Équipe du projet
               </h2>
 
               <div className="relative">
-                {/* Team Lead Section */}
+                {/* Chef d'équipe */}
                 {team_leader && (
                   <div className="relative z-10">
                     <div className="flex flex-col items-center">
@@ -140,12 +135,11 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
                       </div>
                     </div>
 
-                    {/* Connecting line to team members */}
                     {team_members.length > 0 && <div className="h-8 w-0.5 bg-gray-200 mx-auto mt-2"></div>}
                   </div>
                 )}
 
-                {/* Team Members Section */}
+                {/* Membres de l'équipe */}
                 {team_members.length > 0 && (
                   <div className="mt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -187,11 +181,12 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
             </div>
           )}
 
+          {/* Formulaire d’évaluation */}
           <div className="bg-card rounded-xl border shadow-sm p-6 md:p-8">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">Évaluation de projet</h2>
+              <h2 className="text-xl font-semibold mb-2">Évaluation du projet</h2>
               <p className="text-muted-foreground text-sm">
-                Veuillez évaluer ce projet selon les critères suivants de 0 à 5, 5 étant la note la plus élevée.
+                Veuillez évaluer ce projet selon les critères suivants sur une échelle de 0 à 5, 5 étant la meilleure note.
               </p>
             </div>
 
@@ -200,5 +195,5 @@ export default async function EvaluatePage({ params }: { params: { projectId: an
         </div>
       </div>
     </div>
-  );
+  )
 }

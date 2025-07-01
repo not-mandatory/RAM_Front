@@ -14,14 +14,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Mail, Lock, Loader2 } from "lucide-react"
 import { useAuth } from "@/context/auth-context"
 
-// Define the schema
 const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(1, { message: "Password is required" }),
+  email: z.string().email({ message: "Veuillez entrer une adresse email valide" }),
+  password: z.string().min(1, { message: "Le mot de passe est requis" }),
   rememberMe: z.boolean(),
 })
 
-// Derive the type from the schema
 type LoginFormValues = z.infer<typeof loginSchema>
 
 interface LoginFormProps {
@@ -33,33 +31,26 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
   const { login, error: authError, loading } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize the form with the correct types
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false as boolean,
+      rememberMe: false,
     },
   })
 
   async function onSubmit(data: LoginFormValues) {
     setError(null)
-    console.log("Attempting login with:", data.email, "Callback URL:", callbackUrl)
-
     try {
-      // If we're using role-based redirect, pass an empty string as callbackUrl
-      // This will make the login function use the role to determine the redirect
       const redirectUrl = useRoleBasedRedirect ? "" : callbackUrl
       const success = await login(data.email, data.password, redirectUrl)
-      console.log("Login success:", success)
-
       if (!success) {
-        setError("Invalid email or password. Please try again.")
+        setError("Email ou mot de passe invalide. Veuillez réessayer.")
       }
     } catch (err) {
-      console.error("Login error:", err)
-      setError("An unexpected error occurred. Please try again.")
+      console.error("Erreur de connexion :", err)
+      setError("Une erreur inattendue s'est produite. Veuillez réessayer.")
     }
   }
 
@@ -79,12 +70,12 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Adresse mail</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">Adresse email</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
-                      placeholder="name@royalairmaroc.com"
+                      placeholder="prenom.nom@royalairmaroc.com"
                       {...field}
                       className="pl-10 bg-white border-gray-300 focus-visible:ring-red-500 focus-visible:border-red-500"
                     />
@@ -117,6 +108,7 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
             )}
           />
 
+          {/* Optionnel : Se souvenir de moi + mot de passe oublié */}
           {/* <div className="flex items-center justify-between">
             <FormField
               control={form.control}
@@ -135,14 +127,13 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
                     htmlFor="remember-me"
                     className="text-sm font-medium leading-none text-gray-700 cursor-pointer"
                   >
-                    Remember me
+                    Se souvenir de moi
                   </Label>
                 </div>
               )}
             />
-
             <Link href="#" className="text-sm font-medium hover:underline">
-              Forgot password?
+              Mot de passe oublié ?
             </Link>
           </div> */}
 
@@ -156,7 +147,6 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Connexion en cours...
-
               </>
             ) : (
               "Se connecter"
@@ -175,10 +165,9 @@ export function LoginForm({ callbackUrl = "/", useRoleBasedRedirect = false }: L
       </div>
 
       <div className="text-center text-sm">
-        Vous n'avez pas de compte?
-{" "}
+        Vous n’avez pas de compte ?{" "}
         <Link href="/auth/signup" className="font-medium text-black-600 hover:text-green-700 hover:underline">
-          Contacter l'administrateur
+          Contactez l’administrateur
         </Link>
       </div>
     </div>

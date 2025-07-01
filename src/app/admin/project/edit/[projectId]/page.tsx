@@ -12,7 +12,7 @@ interface EditProjectPageProps {
   params: { projectId: string }
 }
 
-// Map API response to ProjectForm props
+// Mapper la réponse API vers les props du formulaire de projet
 function mapApiProjectToForm(apiProject: any) {
   return {
     id: apiProject.id?.toString(),
@@ -44,12 +44,12 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
         setError(null)
         const apiProject = await getProjectDetails(projectId)
         if (!apiProject) {
-          setError("Project not found or could not be loaded.")
+          setError("Projet introuvable ou impossible à charger.")
           return
         }
         setProject(mapApiProjectToForm(apiProject))
       } catch (err) {
-        setError("Failed to load project data. Please try again.")
+        setError("Échec du chargement des données du projet. Veuillez réessayer.")
       } finally {
         setIsLoading(false)
       }
@@ -73,7 +73,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
           <p>{error}</p>
           <Button variant="outline" className="mt-4" onClick={() => router.push("/admin/project")}>
-            Return to Projects
+            Retour aux projets
           </Button>
         </div>
       </div>
