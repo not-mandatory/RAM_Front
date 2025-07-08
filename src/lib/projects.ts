@@ -66,7 +66,7 @@ export const getProjectById = async (id: string) => {
 
 
 export async function getAllProjectEvaluations() {
-  const res = await fetch(`${API_URL}/api/project/AllEvaluations`, {
+  const res = await fetch(`${API_URL}/admin/projects/grouped-evaluations`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export async function getAllProjectEvaluations() {
 
 
 export async function getProjectStatistics() {
-  const res = await fetch(`${API_URL}/api/project/projectAnalysis`, {
+  const res = await fetch(`${API_URL}/admin/projects/summary`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
