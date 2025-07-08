@@ -9,6 +9,7 @@ import { ProjectCommentsTable } from "@/components/admin/project-comments-table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getAllProjectEvaluations, getProjectStatistics } from "@/lib/projects"
 import { Suspense } from "react";
+import { Divide } from "lucide-react"
 
 // Définition du type pour la réponse API
 interface EvaluationResponse {
@@ -96,47 +97,53 @@ export default function StatisticsPage() {
               </p>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full max-w-lg grid-cols-4">
-                <TabsTrigger value="table">Vue Tableau</TabsTrigger>
-                <TabsTrigger value="comments">Commentaires</TabsTrigger>
-                <TabsTrigger value="summary">Résumé</TabsTrigger>
-                <TabsTrigger value="projects">Cartes</TabsTrigger>
-              </TabsList>
 
-              <TabsContent value="table" className="mt-6">
+              <Suspense fallback={<div>g</div>}>
 
-                
+
+
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full max-w-lg grid-cols-4">
+                    <TabsTrigger value="table">Vue Tableau</TabsTrigger>
+                    <TabsTrigger value="comments">Commentaires</TabsTrigger>
+                    <TabsTrigger value="summary">Résumé</TabsTrigger>
+                    <TabsTrigger value="projects">Cartes</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="table" className="mt-6">
+
+                    
+                      
+
+                        <ProjectStatisticsTable
+                        evaluations={evaluationsData}
+                        searchTerm={searchFromUrl}
+                        />
+                  </TabsContent>
                   
 
-                    <ProjectStatisticsTable
-                    evaluations={evaluationsData}
-                    searchTerm={searchFromUrl}
-                    />
-              </TabsContent>
-              
+                  <TabsContent value="comments" className="mt-6">
 
-              <TabsContent value="comments" className="mt-6">
+                    
 
-                
-
-                        <ProjectCommentsTable />
+                            <ProjectCommentsTable />
 
 
-              </TabsContent>
+                  </TabsContent>
 
-              <TabsContent value="summary" className="mt-6">
-                
-                    <ProjectsSummaryTable projectStats={projectStats} />
+                  <TabsContent value="summary" className="mt-6">
+                    
+                        <ProjectsSummaryTable projectStats={projectStats} />
 
-              </TabsContent>
+                  </TabsContent>
 
-              <TabsContent value="projects" className="mt-6">
-                
-                    <ProjectsOverview projectStats={projectStats} />
+                  <TabsContent value="projects" className="mt-6">
+                    
+                        <ProjectsOverview projectStats={projectStats} />
 
-              </TabsContent>
-            </Tabs>
+                  </TabsContent>
+                </Tabs>
+              </Suspense>
           </div>
         </div>
       </div>
