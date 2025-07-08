@@ -167,18 +167,11 @@
 
 
 
-import dynamic from "next/dynamic"
-import { Suspense } from "react"
-
-const ClientStatisticsPage = dynamic(() => import("@/components/admin/ClientStatisticsPage"), {
-  ssr: false,
-})
+// src/app/admin/statistics/page.tsx
+import ClientStatisticsPage from "@/components/admin/ClientStatisticsPage"
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div>Chargement des statistiques...</div>}>
-      <ClientStatisticsPage />
-    </Suspense>
-  )
+  return <ClientStatisticsPage />
 }
+
 
