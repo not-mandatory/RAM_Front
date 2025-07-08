@@ -165,7 +165,7 @@
 //   }))
 // }
 
-
+"use client"
 
 // src/app/admin/statistics/page.tsx
 import ClientStatisticsPage from "@/components/admin/ClientStatisticsPage"
