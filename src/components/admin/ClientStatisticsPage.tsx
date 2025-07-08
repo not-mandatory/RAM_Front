@@ -36,8 +36,8 @@ interface ProjectStats {
 }
 
 export default function ClientStatisticsPage() {
-  const searchParams = useSearchParams()
-  const searchFromUrl = searchParams.get("search") || ""
+//   const searchParams = useSearchParams()
+//   const searchFromUrl = searchParams.get("search") || ""
 
   const [evaluationsData, setEvaluationsData] = useState<FormattedEvaluation[]>([])
   const [projectStats, setProjectStats] = useState<ProjectStats[]>([])
