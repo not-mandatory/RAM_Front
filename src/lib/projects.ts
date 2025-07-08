@@ -1,4 +1,5 @@
 // lib/projects.ts
+import {API_URL} from "@/config"
 
 export async function getProjects() {
   const res = await fetch("/api/project/getAll", {
@@ -61,7 +62,7 @@ export const getProjectById = async (id: string) => {
   }
 }; 
 
-import {API_URL} from "@/config"
+
 
 
 export async function getAllProjectEvaluations() {

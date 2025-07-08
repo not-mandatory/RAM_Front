@@ -83,29 +83,7 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-2">
-      <div className="container mx-auto">
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col gap-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-800">
-              Statistiques des évaluations de projets
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Consultez et analysez toutes les évaluations de projets soumises.
-            </p>
-          </div>
-
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-lg grid-cols-4">
-              <TabsTrigger value="table">Vue Tableau</TabsTrigger>
-              <TabsTrigger value="comments">Commentaires</TabsTrigger>
-              <TabsTrigger value="summary">Résumé</TabsTrigger>
-              <TabsTrigger value="projects">Cartes</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="table" className="mt-6">
-
-              {/* <Suspense
+     <Suspense
                 fallback={
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
@@ -114,68 +92,101 @@ export default function StatisticsPage() {
                     </div>
                   </div>
                 }
-                > */}
+      > 
+      <div className="min-h-screen bg-gray-100 py-10 px-2">
+        <div className="container mx-auto">
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col gap-6">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-gray-800">
+                Statistiques des évaluations de projets
+              </h1>
+              <p className="text-muted-foreground mt-2">
+                Consultez et analysez toutes les évaluations de projets soumises.
+              </p>
+            </div>
 
-                  <ProjectStatisticsTable
-                   evaluations={evaluationsData}
-                   searchTerm={searchFromUrl}
-                  />
-              {/* </Suspense> */}
-            </TabsContent>
-            
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full max-w-lg grid-cols-4">
+                <TabsTrigger value="table">Vue Tableau</TabsTrigger>
+                <TabsTrigger value="comments">Commentaires</TabsTrigger>
+                <TabsTrigger value="summary">Résumé</TabsTrigger>
+                <TabsTrigger value="projects">Cartes</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="comments" className="mt-6">
+              <TabsContent value="table" className="mt-6">
 
-              {/* <Suspense
-                fallback={
-                  <div className="flex justify-center py-12">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                      <p className="text-muted-foreground">Chargement...</p>
+                {/* <Suspense
+                  fallback={
+                    <div className="flex justify-center py-12">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                        <p className="text-muted-foreground">Chargement...</p>
+                      </div>
                     </div>
-                  </div>
-                }
-                > */}
+                  }
+                  > */}
 
-                      <ProjectCommentsTable />
-
+                    <ProjectStatisticsTable
+                    evaluations={evaluationsData}
+                    searchTerm={searchFromUrl}
+                    />
                 {/* </Suspense> */}
+              </TabsContent>
+              
 
-            </TabsContent>
+              <TabsContent value="comments" className="mt-6">
 
-            <TabsContent value="summary" className="mt-6">
-              {/* <Suspense
-                fallback={
-                  <div className="flex justify-center py-12">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                      <p className="text-muted-foreground">Chargement...</p>
+                {/* <Suspense
+                  fallback={
+                    <div className="flex justify-center py-12">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                        <p className="text-muted-foreground">Chargement...</p>
+                      </div>
                     </div>
-                  </div>
-                }
-                > */}
-                  <ProjectsSummaryTable projectStats={projectStats} />
-              {/* </Suspense> */}
-            </TabsContent>
+                  }
+                  > */}
 
-            <TabsContent value="projects" className="mt-6">
-              {/* <Suspense
-                fallback={
-                  <div className="flex justify-center py-12">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                      <p className="text-muted-foreground">Chargement...</p>
+                        <ProjectCommentsTable />
+
+                  {/* </Suspense> */}
+
+              </TabsContent>
+
+              <TabsContent value="summary" className="mt-6">
+                {/* <Suspense
+                  fallback={
+                    <div className="flex justify-center py-12">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                        <p className="text-muted-foreground">Chargement...</p>
+                      </div>
                     </div>
-                  </div>
-                }
-                > */}
-                  <ProjectsOverview projectStats={projectStats} />
-              {/* </Suspense> */}
-            </TabsContent>
-          </Tabs>
+                  }
+                  > */}
+                    <ProjectsSummaryTable projectStats={projectStats} />
+                {/* </Suspense> */}
+              </TabsContent>
+
+              <TabsContent value="projects" className="mt-6">
+                {/* <Suspense
+                  fallback={
+                    <div className="flex justify-center py-12">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                        <p className="text-muted-foreground">Chargement...</p>
+                      </div>
+                    </div>
+                  }
+                  > */}
+                    <ProjectsOverview projectStats={projectStats} />
+                {/* </Suspense> */}
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 
