@@ -106,72 +106,35 @@ export default function StatisticsPage() {
 
               <TabsContent value="table" className="mt-6">
 
-                <Suspense
-                  fallback={
-                    <div className="flex justify-center py-12">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                        <p className="text-muted-foreground">Chargement...</p>
-                      </div>
-                    </div>
-                  }
+                
                   >
 
                     <ProjectStatisticsTable
                     evaluations={evaluationsData}
                     searchTerm={searchFromUrl}
                     />
-                </Suspense>
               </TabsContent>
               
 
               <TabsContent value="comments" className="mt-6">
 
-                <Suspense
-                  fallback={
-                    <div className="flex justify-center py-12">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                        <p className="text-muted-foreground">Chargement...</p>
-                      </div>
-                    </div>
-                  }
-                  >
+                
 
                         <ProjectCommentsTable />
 
-                  </Suspense>
 
               </TabsContent>
 
               <TabsContent value="summary" className="mt-6">
-                <Suspense
-                  fallback={
-                    <div className="flex justify-center py-12">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                        <p className="text-muted-foreground">Chargement...</p>
-                      </div>
-                    </div>
-                  }
-                  >
+                
                     <ProjectsSummaryTable projectStats={projectStats} />
-                </Suspense>
+
               </TabsContent>
 
               <TabsContent value="projects" className="mt-6">
-                <Suspense
-                  fallback={
-                    <div className="flex justify-center py-12">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                        <p className="text-muted-foreground">Chargement...</p>
-                      </div>
-                    </div>
-                  }
-                  >
+                
                     <ProjectsOverview projectStats={projectStats} />
-                </Suspense>
+                    
               </TabsContent>
             </Tabs>
           </div>
