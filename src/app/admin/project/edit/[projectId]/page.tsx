@@ -7,6 +7,7 @@ import { getProjectDetails } from "@/lib/projects"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { Suspense } from "react";
 
 interface EditProjectPageProps {
   params: { projectId: string }
@@ -102,8 +103,20 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Modifier Projet</h1>
       </div>
+      <Suspense
+            fallback={
+              <div className="flex justify-center py-12">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                  <p className="text-muted-foreground">Chargement...</p>
+                </div>
+              </div>
+            }
+          >
+          <ProjectForm project={project} />          
+       </Suspense>
 
-      <ProjectForm project={project} />
+            
     </div>
   )
 }
