@@ -1,4 +1,5 @@
 import { IdeasTable } from "@/components/admin/ideas-table"
+import { Suspense } from "react";
 
 export default function IdeasPage() {
   return (
@@ -9,7 +10,9 @@ export default function IdeasPage() {
             <h1 className="text-3xl font-bold">Submitted Ideas</h1>
             <div className="text-sm text-muted-foreground">Approve ideas to convert them into projects</div>
           </div>
-          <IdeasTable />
+          <Suspense fallback={<div>Loading ideas...</div>}>
+            <IdeasTable />
+          </Suspense>
         </div>
       </div>
     </div>
