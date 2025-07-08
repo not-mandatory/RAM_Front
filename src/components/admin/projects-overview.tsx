@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -63,6 +63,10 @@ function ProjectCard({ project }: { project: ProjectStats }) {
   const questionNames = ["Désirabilité", "Viabilité", "Faisabilité", "Alignement Corporate"]
 
   return (
+    <Suspense>
+      <div className="animate-fade-in">
+        <ProjectCardContent project={project} totalEvaluations={totalEvaluations} recommendationRate={recommendationRate} />
+      </div>
     <Card>
       <CardHeader>
         <div className="flex justify-between items-start">
@@ -120,5 +124,7 @@ function ProjectCard({ project }: { project: ProjectStats }) {
         </div>
       </CardContent>
     </Card>
+    </Suspense>
+
   )
 }
