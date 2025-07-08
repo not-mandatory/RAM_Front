@@ -44,25 +44,25 @@ export default function ClientStatisticsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("table")
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      try {
-        const [apiResponse, statsResponse] = await Promise.all([
-          getAllProjectEvaluations(),
-          getProjectStatistics(),
-        ])
-        const formattedEvaluations = formatEvaluations(apiResponse)
-        setEvaluationsData(formattedEvaluations)
-        setProjectStats(statsResponse)
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données statistiques :", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       setIsLoading(true)
+//       try {
+//         const [apiResponse, statsResponse] = await Promise.all([
+//           getAllProjectEvaluations(),
+//           getProjectStatistics(),
+//         ])
+//         const formattedEvaluations = formatEvaluations(apiResponse)
+//         setEvaluationsData(formattedEvaluations)
+//         setProjectStats(statsResponse)
+//       } catch (error) {
+//         console.error("Erreur lors de la récupération des données statistiques :", error)
+//       } finally {
+//         setIsLoading(false)
+//       }
+//     }
+//     fetchData()
+//   }, [])
 
   if (isLoading) {
     return (
