@@ -101,7 +101,7 @@ export async function getProjectStatistics() {
 
 
 export async function getProjectEvaluationsById(id: string) {
-  const res = await fetch(`/api/project/evaluate/${id}`, {
+  const res = await fetch(`${API_URL}/api/project/evaluate/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
