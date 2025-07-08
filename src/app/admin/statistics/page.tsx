@@ -110,7 +110,7 @@ export default function StatisticsPage() {
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                      <p className="text-muted-foreground">Chargement des projets...</p>
+                      <p className="text-muted-foreground">Chargement...</p>
                     </div>
                   </div>
                 }
@@ -131,7 +131,7 @@ export default function StatisticsPage() {
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                      <p className="text-muted-foreground">Chargement des projets...</p>
+                      <p className="text-muted-foreground">Chargement...</p>
                     </div>
                   </div>
                 }
@@ -149,7 +149,7 @@ export default function StatisticsPage() {
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                      <p className="text-muted-foreground">Chargement des projets...</p>
+                      <p className="text-muted-foreground">Chargement...</p>
                     </div>
                   </div>
                 }
@@ -164,7 +164,7 @@ export default function StatisticsPage() {
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                      <p className="text-muted-foreground">Chargement des projets...</p>
+                      <p className="text-muted-foreground">Chargement...</p>
                     </div>
                   </div>
                 }

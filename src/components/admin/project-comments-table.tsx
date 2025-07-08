@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, ArrowUpDown, MessageSquare } from "lucide-react"
-
+import {API_URL} from "@/config"
 interface CommentData {
   username: string
   project_name: string
@@ -30,7 +30,7 @@ export function ProjectCommentsTable() {
       setIsLoading(true)
       setError(null)
       try {
-        const response = await fetch("http://localhost:5000/api/comments/all", {
+        const response = await fetch(`${API_URL}/api/comments/all`, {
           method: "GET",
           credentials: "include",
           headers: {
