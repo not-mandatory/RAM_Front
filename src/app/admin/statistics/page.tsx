@@ -83,16 +83,7 @@ export default function StatisticsPage() {
   }
 
   return (
-     <Suspense
-                fallback={
-                  <div className="flex justify-center py-12">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
-                      <p className="text-muted-foreground">Chargement...</p>
-                    </div>
-                  </div>
-                }
-      > 
+     
       <div className="min-h-screen bg-gray-100 py-10 px-2">
         <div className="container mx-auto">
           <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col gap-6">
@@ -186,7 +177,6 @@ export default function StatisticsPage() {
           </div>
         </div>
       </div>
-    </Suspense>
   )
 }
 
