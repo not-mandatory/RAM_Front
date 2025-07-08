@@ -1,5 +1,7 @@
+import {API_URL} from "@/config"
+
 export async function getUsers() {
-    const res = await fetch("http://localhost:3000/api/admin/user/getAll", {
+    const res = await fetch(`${API_URL}/api/admin/user/getAll`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

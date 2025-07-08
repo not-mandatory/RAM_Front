@@ -185,16 +185,6 @@ export function ProjectForm({ project }: ProjectFormProps = {}) {
   }, [ideaId]);
 
 
-
-
-
-
-
-
-
-
-
-
   // Set up field array for team members
   const { fields, append, remove } = useFieldArray({
     control: form.control,

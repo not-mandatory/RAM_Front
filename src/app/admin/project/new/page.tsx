@@ -7,7 +7,8 @@ export default function NewProjectPage() {
       <h1 className="text-3xl font-bold mb-6">Créer un nouveau projet</h1>
       <Suspense fallback={<div>Loading form…</div>}>
         <ProjectForm />
-      </Suspense>    </div>
+      </Suspense>    
+    </div>
   )
 }
 
