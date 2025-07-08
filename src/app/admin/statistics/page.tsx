@@ -107,7 +107,7 @@ export default function StatisticsPage() {
               <TabsContent value="table" className="mt-6">
 
                 
-                  >
+                  
 
                     <ProjectStatisticsTable
                     evaluations={evaluationsData}
@@ -134,7 +134,7 @@ export default function StatisticsPage() {
               <TabsContent value="projects" className="mt-6">
                 
                     <ProjectsOverview projectStats={projectStats} />
-                    
+
               </TabsContent>
             </Tabs>
           </div>
