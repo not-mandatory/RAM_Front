@@ -105,7 +105,7 @@ export default function StatisticsPage() {
 
             <TabsContent value="table" className="mt-6">
 
-              <Suspense
+              {/* <Suspense
                 fallback={
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
@@ -114,19 +114,19 @@ export default function StatisticsPage() {
                     </div>
                   </div>
                 }
-                >
+                > */}
 
                   <ProjectStatisticsTable
                    evaluations={evaluationsData}
                    searchTerm={searchFromUrl}
                   />
-              </Suspense>
+              {/* </Suspense> */}
             </TabsContent>
             
 
             <TabsContent value="comments" className="mt-6">
 
-              <Suspense
+              {/* <Suspense
                 fallback={
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
@@ -135,16 +135,16 @@ export default function StatisticsPage() {
                     </div>
                   </div>
                 }
-                >
+                > */}
 
                       <ProjectCommentsTable />
 
-                </Suspense>
+                {/* </Suspense> */}
 
             </TabsContent>
 
             <TabsContent value="summary" className="mt-6">
-              <Suspense
+              {/* <Suspense
                 fallback={
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
@@ -153,13 +153,13 @@ export default function StatisticsPage() {
                     </div>
                   </div>
                 }
-                >
+                > */}
                   <ProjectsSummaryTable projectStats={projectStats} />
-              </Suspense>
+              {/* </Suspense> */}
             </TabsContent>
 
             <TabsContent value="projects" className="mt-6">
-              <Suspense
+              {/* <Suspense
                 fallback={
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center gap-4">
@@ -168,9 +168,9 @@ export default function StatisticsPage() {
                     </div>
                   </div>
                 }
-                >
+                > */}
                   <ProjectsOverview projectStats={projectStats} />
-              </Suspense>
+              {/* </Suspense> */}
             </TabsContent>
           </Tabs>
         </div>
