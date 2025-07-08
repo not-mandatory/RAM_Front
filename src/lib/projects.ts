@@ -165,7 +165,7 @@ export async function getProjectDetails(id: string): Promise<ProjectDetails | nu
     try {
         // IMPORTANT: Ensure this URL points to your Flask backend (http://localhost:5000)
         // and matches the combined endpoint path.
-        const response = await fetch(`http://localhost:5000/project/${id}`, {
+        const response = await fetch(`${API_URL}/project/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
