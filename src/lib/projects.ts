@@ -61,9 +61,11 @@ export const getProjectById = async (id: string) => {
   }
 }; 
 
+import {API_URL} from "@/config"
+
 
 export async function getAllProjectEvaluations() {
-  const res = await fetch("http://localhost:3000/api/project/AllEvaluations", {
+  const res = await fetch(`${API_URL}/api/project/AllEvaluations`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -82,7 +84,7 @@ export async function getAllProjectEvaluations() {
 
 
 export async function getProjectStatistics() {
-  const res = await fetch("http://localhost:3000/api/project/projectAnalysis", {
+  const res = await fetch(`${API_URL}/api/project/projectAnalysis`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

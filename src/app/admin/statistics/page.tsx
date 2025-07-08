@@ -8,6 +8,7 @@ import { ProjectsSummaryTable } from "@/components/admin/projects-summary-table"
 import { ProjectCommentsTable } from "@/components/admin/project-comments-table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getAllProjectEvaluations, getProjectStatistics } from "@/lib/projects"
+import { Suspense } from "react";
 
 // Définition du type pour la réponse API
 interface EvaluationResponse {
@@ -103,22 +104,73 @@ export default function StatisticsPage() {
             </TabsList>
 
             <TabsContent value="table" className="mt-6">
-              <ProjectStatisticsTable
-                evaluations={evaluationsData}
-                searchTerm={searchFromUrl}
-              />
+
+              <Suspense
+                fallback={
+                  <div className="flex justify-center py-12">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                      <p className="text-muted-foreground">Chargement des projets...</p>
+                    </div>
+                  </div>
+                }
+                >
+
+                  <ProjectStatisticsTable
+                   evaluations={evaluationsData}
+                   searchTerm={searchFromUrl}
+                  />
+              </Suspense>
             </TabsContent>
+            
 
             <TabsContent value="comments" className="mt-6">
-              <ProjectCommentsTable />
+
+              <Suspense
+                fallback={
+                  <div className="flex justify-center py-12">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                      <p className="text-muted-foreground">Chargement des projets...</p>
+                    </div>
+                  </div>
+                }
+                >
+
+                      <ProjectCommentsTable />
+
+                </Suspense>
+
             </TabsContent>
 
             <TabsContent value="summary" className="mt-6">
-              <ProjectsSummaryTable projectStats={projectStats} />
+              <Suspense
+                fallback={
+                  <div className="flex justify-center py-12">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                      <p className="text-muted-foreground">Chargement des projets...</p>
+                    </div>
+                  </div>
+                }
+                >
+                  <ProjectsSummaryTable projectStats={projectStats} />
+              </Suspense>
             </TabsContent>
 
             <TabsContent value="projects" className="mt-6">
-              <ProjectsOverview projectStats={projectStats} />
+              <Suspense
+                fallback={
+                  <div className="flex justify-center py-12">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-700"></div>
+                      <p className="text-muted-foreground">Chargement des projets...</p>
+                    </div>
+                  </div>
+                }
+                >
+                  <ProjectsOverview projectStats={projectStats} />
+              </Suspense>
             </TabsContent>
           </Tabs>
         </div>
