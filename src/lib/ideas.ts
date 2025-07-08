@@ -1,8 +1,9 @@
 import { Idea } from "@/types/idea"
+import {API_URL} from "@/config"
 
 
 export async function getIdeas() {
-    const res = await fetch("/api/idea/getIdeas", {
+    const res = await fetch(`${API_URL}/api/idea/getIdeas`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
