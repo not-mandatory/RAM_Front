@@ -80,7 +80,7 @@ export default function ClientStatisticsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-2">
-      <div className="container mx-auto">
+      {/* <div className="container mx-auto">
         <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 flex flex-col gap-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-gray-800">
@@ -116,7 +116,7 @@ export default function ClientStatisticsPage() {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
